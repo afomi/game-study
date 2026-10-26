@@ -76,11 +76,14 @@ jobs:
         run: bundle exec npm run check
 
       - name: Configure Pages
+        id: pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
+      # base_path is "/game-study" while the site lives at afomi.github.io/game-study,
+      # and "" once the custom domain (games.civic.studio) is set in the repo's Pages settings.
       - name: Build site
         working-directory: game-study
-        run: bundle exec jekyll build
+        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
 
