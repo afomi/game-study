@@ -1,6 +1,6 @@
 # Game Study — Plan
 
-*Rebuilding classic games, frame by frame.* A Civic Studio series at games.civic.studio (repo `civicstudio/game-study`).
+*Rebuilding classic games, frame by frame.* A Civic Studio series at games.civic.studio (repo `afomi/game-study`).
 Each study takes one classic game apart one system at a time and rebuilds it as a playable web remake; installments are sketches.
 Goals: fun to make, teach how games are made, honor the people who made them, keep the games alive.
 First game: SNK's Baseball Stars (remake in `../baseball-stars`).
@@ -44,7 +44,7 @@ Next: retone 00/02/03; then the remake's pitching phase (no menu; mound, wind-up
   Open: release angle math (`$C18F`, style table `$97A4`); mound limits; strike-zone flag (`$98F0`) and calls; pad read before/after step (needs a run that changes buttons mid-flight); the batter's side.
 - [ ] L5. Credits — sourced credits for Baseball Stars on the game page.
 - [ ] L6. Label export — generate a Mesen `.mlb` from `_data/ram/<game>.yml`.
-- [ ] L7. Go live — you: create `civicstudio/game-study` and `civicstudio/baseball-stars`, enable Pages (source: GitHub Actions) with custom domain `games.civic.studio`, add DNS `CNAME games → civicstudio.github.io`, push.
+- [~] L7. Go live — `afomi/game-study` created and pushed (2026-10-26). You: create `afomi/baseball-stars` (the workflow checks it out) and push it, enable Pages (source: GitHub Actions) with custom domain `games.civic.studio`, add DNS `CNAME games → afomi.github.io`.
   Ready: `CNAME`, `.github/workflows/pages.yml` (pinned SHAs), Linux platform in `Gemfile.lock`, fair-use captions, trademark footer.
   Test: the workflow's check + verify steps; then load https://games.civic.studio.
 - [x] L8. Fair-use screenshot pipeline — `bench/promote.mjs` publishes single frames with provenance; captions credit game/publisher/year/frame; build fails on unrecorded screens.

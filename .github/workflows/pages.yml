@@ -3,7 +3,7 @@
 # The site reads each remake's source (snippets) and bundle (playable embeds),
 # so every remake repo is checked out beside this one, as on a laptop:
 #   $GITHUB_WORKSPACE/game-study       this repo
-#   $GITHUB_WORKSPACE/baseball-stars   civicstudio/baseball-stars
+#   $GITHUB_WORKSPACE/baseball-stars   afomi/baseball-stars
 # `npm run check` must pass before anything deploys.
 # Actions are pinned to commit SHAs (tags noted) per bench/MESENCE-SECURITY.md's advice.
 # Never deploys the workbench: it's ROM-derived, local only, and excluded by _config.yml.
@@ -15,7 +15,7 @@ on:
     branches: [main]
   workflow_dispatch:
   # A remake repo can trigger a rebuild after it changes:
-  #   gh api repos/civicstudio/game-study/dispatches -f event_type=remake-updated
+  #   gh api repos/afomi/game-study/dispatches -f event_type=remake-updated
   repository_dispatch:
     types: [remake-updated]
 
@@ -40,7 +40,7 @@ jobs:
       - name: Check out remake — baseball-stars
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: civicstudio/baseball-stars
+          repository: afomi/baseball-stars
           path: baseball-stars
           # Public repos need no token. If a remake repo is private, add a
           # read-only fine-grained token as the REMAKES_READ_TOKEN secret.

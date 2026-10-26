@@ -119,11 +119,11 @@ The build fails if a published PNG has no provenance record, or a sketch include
 
 ## Hosting
 
-GitHub Pages from `civicstudio/game-study`, built by `.github/workflows/pages.yml`, served at `games.civic.studio` (`CNAME`).
-The workflow checks out each remake repo beside this one (e.g. `civicstudio/baseball-stars`), builds the bundles, runs `npm run check`, then builds and deploys.
+GitHub Pages from `afomi/game-study`, built by `.github/workflows/pages.yml`, served at `games.civic.studio` (`CNAME`).
+The workflow checks out each remake repo beside this one (e.g. `afomi/baseball-stars`), builds the bundles, runs `npm run check`, then builds and deploys.
 Actions are pinned to commit SHAs.
 A remake repo can trigger a rebuild with a `remake-updated` repository dispatch.
-DNS: a `CNAME` record `games.civic.studio → civicstudio.github.io`.
+DNS: a `CNAME` record `games.civic.studio → afomi.github.io`.
 
 ## Rules
 
