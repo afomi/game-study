@@ -1,0 +1,145 @@
+# Published screenshots for baseball-stars: provenance written by bench/promote.mjs.
+
+pitch-view:
+  run: attract
+  shot: t053
+  frame: 3180
+  experiment: bench/experiments/baseball-stars/attract.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-22
+
+player-card-sandie:
+  run: view-team-0
+  shot: f1230
+  frame: 1230
+  experiment: bench/experiments/baseball-stars/view-team-0.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-23
+
+player-card-lian:
+  run: view-team-6
+  shot: f1230
+  frame: 1230
+  experiment: bench/experiments/baseball-stars/view-team-6.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-23
+
+hire-style:
+  run: hire-04-styles
+  shot: start
+  frame: 3700
+  experiment: bench/experiments/baseball-stars/hire-04-styles.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-23
+
+fired:
+  run: hire-02-fire-then-hire
+  shot: f3060
+  frame: 3060
+  experiment: bench/experiments/baseball-stars/hire-02-fire-then-hire.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-23
+
+strike-out-93:
+  run: game-03-start
+  shot: f3550
+  frame: 3550
+  experiment: bench/experiments/baseball-stars/game-03-start.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-25
+
+riddle-wren:
+  run: egg-wren-unlock
+  shot: riddle
+  frame: 1320
+  experiment: bench/experiments/baseball-stars/egg-wren-unlock.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-25
+
+riddle-when:
+  run: egg-super-unlock
+  shot: riddle
+  frame: 1160
+  experiment: bench/experiments/baseball-stars/egg-super-unlock.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-25
+
+hire-female:
+  run: egg-female-hire-2
+  shot: right
+  frame: 3860
+  experiment: bench/experiments/baseball-stars/egg-female-hire-2.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-25
+
+card-wren-team:
+  run: egg-wren-unlock
+  shot: t21900
+  frame: 21900
+  experiment: bench/experiments/baseball-stars/egg-wren-unlock.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-25
+
+card-super-team:
+  run: egg-super-unlock
+  shot: t21900
+  frame: 21900
+  experiment: bench/experiments/baseball-stars/egg-super-unlock.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-25
+
+called-game:
+  run: game-06-nine-innings
+  shot: f30600
+  frame: 30600
+  experiment: bench/experiments/baseball-stars/game-06-nine-innings.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-25
+
+the-gate:
+  run: game-06-nine-innings
+  shot: f30960
+  frame: 30960
+  experiment: bench/experiments/baseball-stars/game-06-nine-innings.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-25
+
+relief-pitcher:
+  run: game-06-nine-innings
+  shot: f77760
+  frame: 77760
+  experiment: bench/experiments/baseball-stars/game-06-nine-innings.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-25
+
+home-run:
+  run: game-05-mash
+  shot: f13080
+  frame: 13080
+  experiment: bench/experiments/baseball-stars/game-05-mash.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-25
+
+swing:
+  run: swing-01
+  shot: f2756
+  frame: 2756
+  experiment: bench/experiments/baseball-stars/swing-01.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-25
+
+pitch-arrives:
+  run: pitch-rig-none
+  shot: f6847
+  frame: 6847
+  experiment: bench/experiments/baseball-stars/pitch-rig-none.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-26
+
+drop-ball-lands:
+  run: pitch-rig-drop
+  shot: f6853
+  frame: 6853
+  experiment: bench/experiments/baseball-stars/pitch-rig-drop.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-26

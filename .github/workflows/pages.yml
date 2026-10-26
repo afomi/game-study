@@ -1,0 +1,110 @@
+# Build and deploy Game Study to GitHub Pages (games.civic.studio).
+#
+# The site reads each remake's source (snippets) and bundle (playable embeds),
+# so every remake repo is checked out beside this one, as on a laptop:
+#   $GITHUB_WORKSPACE/game-study       this repo
+#   $GITHUB_WORKSPACE/baseball-stars   civicstudio/baseball-stars
+# `npm run check` must pass before anything deploys.
+# Actions are pinned to commit SHAs (tags noted) per bench/MESENCE-SECURITY.md's advice.
+# Never deploys the workbench: it's ROM-derived, local only, and excluded by _config.yml.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # A remake repo can trigger a rebuild after it changes:
+  #   gh api repos/civicstudio/game-study/dispatches -f event_type=remake-updated
+  repository_dispatch:
+    types: [remake-updated]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out game-study
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: game-study
+
+      - name: Check out remake — baseball-stars
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: civicstudio/baseball-stars
+          path: baseball-stars
+          # Public repos need no token. If a remake repo is private, add a
+          # read-only fine-grained token as the REMAKES_READ_TOKEN secret.
+          token: ${{ secrets.REMAKES_READ_TOKEN || github.token }}
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@b1da4809b005e0178fe08a1d57317bffc00b7b4c # v1.332.0
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+          working-directory: game-study
+
+      - name: Install npm dependencies
+        run: |
+          npm ci --prefix game-study
+          npm ci --prefix baseball-stars
+
+      - name: Test the remake against measured values
+        working-directory: baseball-stars
+        run: npm test
+
+      - name: Build remake bundles
+        working-directory: game-study
+        run: npm run games
+
+      - name: Check (references, links, CSS, no workbench, fail-loud faults)
+        working-directory: game-study
+        run: bundle exec npm run check
+
+      - name: Configure Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Build site
+        working-directory: game-study
+        run: bundle exec jekyll build
+        env:
+          JEKYLL_ENV: production
+
+      - name: Verify the build
+        working-directory: game-study
+        run: |
+          test -s _site/index.html
+          test -s _site/assets/css/main.css
+          test "$(cat _site/CNAME)" = "games.civic.studio"
+          test ! -e _site/workbench
+          echo "verified: index, css, CNAME, no workbench"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: game-study/_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

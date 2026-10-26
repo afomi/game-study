@@ -1,0 +1,62 @@
+---
+layout: default
+---
+{% assign game = site.games | where: "slug", page.game | first %}
+{% assign series = site.episodes | where: "game", page.game | sort: "episode" %}
+{% if page.scene %}
+{% assign board = site.data.storyboard[page.game] %}
+{% for act in board.acts %}
+{% assign hit = act.scenes | where: "id", page.scene | first %}
+{% if hit %}{% assign scene = hit %}{% assign part = forloop.index %}{% assign part_title = act.title %}{% endif %}
+{% endfor %}
+{% endif %}
+<article>
+  <header class="mb-8">
+    <p class="kicker">
+      <a href="{{ game.url | relative_url }}">Study No. {{ game.study }} · {{ game.title }}</a>
+      · Sketch {{ page.episode | prepend: "00" | slice: -2, 2 }}
+    </p>
+    <h1 class="mt-2 text-4xl font-bold leading-tight">{{ page.title }}</h1>
+    {% if page.summary %}
+    <p class="mt-2 text-xl text-muted">{{ page.summary }}</p>
+    {% endif %}
+    <p class="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted">
+      <span class="badge badge--{{ page.status }}">{{ page.status }}</span>
+      {% if scene %}
+      <a
+        class="text-muted"
+        href="{{ game.url | relative_url }}#scene-{{ scene.id }}"
+      >Part {{ part }} · {{ part_title }} · {{ scene.title }}</a>
+      {% endif %}
+      {% if page.subsystem %}
+      <span class="font-mono">{{ page.subsystem }}</span>
+      {% endif %}
+    </p>
+  </header>
+
+  <div class="prose max-w-none prose-headings:text-ink prose-p:text-ink prose-li:text-ink prose-strong:text-ink prose-a:text-accent prose-code:text-ink prose-code:before:content-none prose-code:after:content-none">
+    {{ content }}
+  </div>
+
+  {% for ep in series %}
+  {% if ep.url == page.url %}
+  {% assign prev_i = forloop.index0 | minus: 1 %}
+  {% if prev_i >= 0 %}{% assign prev = series[prev_i] %}{% endif %}
+  {% assign next = series[forloop.index] %}
+  {% endif %}
+  {% endfor %}
+  <nav
+    class="mt-12 flex justify-between gap-4 border-t border-rule pt-4"
+    aria-label="{{ game.title }} sketches"
+  >
+    {% if prev %}
+    <a href="{{ prev.url | relative_url }}">← {{ prev.title }}</a>
+    {% endif %}
+    {% if next %}
+    <a
+      class="ml-auto text-right"
+      href="{{ next.url | relative_url }}"
+    >{{ next.title }} →</a>
+    {% endif %}
+  </nav>
+</article>

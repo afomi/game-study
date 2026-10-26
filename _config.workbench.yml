@@ -1,0 +1,18 @@
+# Local-only overlay: builds the workbench (ROM-derived screenshots and tiles).
+#   jekyll serve --config _config.yml,_config.workbench.yml
+# Never deploy with this overlay. `npm run check` asserts the normal build has no /workbench.
+workbench: true
+exclude:
+  - tmp        # local ROM collections: never build or publish
+  - "*.nes"
+  - "*.zip"
+  - test
+  - bench
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - PLAN.md
+  - package.json
+  - package-lock.json
+  - node_modules
+  - assets/css/tailwind.css   # compiled to main.css by _plugins/tailwind.rb

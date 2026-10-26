@@ -1,0 +1,37 @@
+{% assign vars = site.data.ram[include.game] | sort: "addr" %}
+{% if vars.size > 0 %}
+<div class="mt-3 overflow-x-auto">
+  <table class="w-full border-collapse text-left text-sm">
+    <thead class="border-b-2 border-ink">
+      <tr>
+        <th class="px-2 py-1">Addr</th>
+        <th class="px-2 py-1">Name</th>
+        <th class="px-2 py-1">Size</th>
+        <th class="px-2 py-1">What it holds</th>
+        <th class="px-2 py-1">Confidence</th>
+        <th class="px-2 py-1">Remake</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in vars %}
+      <tr
+        id="ram-{{ v.name }}"
+        class="border-b border-rule target:bg-code"
+      >
+        <td class="px-2 py-1 font-mono">{{ v.addr }}</td>
+        <td class="px-2 py-1 font-mono">{{ v.name }}</td>
+        <td class="px-2 py-1">{{ v.size | default: 1 }}</td>
+        <td class="px-2 py-1">{{ v.desc }}</td>
+        <td class="px-2 py-1"><span class="badge badge--{{ v.confidence }}">{{ v.confidence }}</span></td>
+        <td class="px-2 py-1 font-mono">{{ v.remake }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="mt-3 text-muted">
+  No variables mapped yet.
+  Addresses are added to <code class="font-mono text-sm">_data/ram/{{ include.game }}.yml</code> only once they've been observed on the bench.
+</p>
+{% endif %}

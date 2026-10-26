@@ -1,0 +1,89 @@
+/* Tailwind v4 entry. Compiled to _site/assets/css/main.css by _plugins/tailwind.rb
+   after every build (pattern from afomi/jekyll-with-tailwind). */
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Colors are tokens; dark mode swaps the token values, not the markup. */
+@theme {
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-pixel: "Press Start 2P", ui-monospace, monospace;
+
+  --color-paper: #f6f3ea;
+  --color-surface: #ffffff;
+  --color-ink: #1d1b16;
+  --color-muted: #6b665a;
+  --color-rule: #ddd6c4;
+  --color-accent: #c8102e;
+  --color-code: #efe9da;
+  --color-screen: #000000;
+  --color-guess: #b26b00;
+  --color-observed: #1f6fb2;
+  --color-confirmed: #1d7a3a;
+  --color-planned: #6b665a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-paper: #14130f;
+    --color-surface: #1d1c17;
+    --color-ink: #ece7da;
+    --color-muted: #a39d8d;
+    --color-rule: #34322a;
+    --color-accent: #ff5468;
+    --color-code: #24221c;
+    --color-guess: #f0a43a;
+    --color-observed: #6db3f0;
+    --color-confirmed: #63c784;
+    --color-planned: #a39d8d;
+  }
+}
+
+@layer base {
+  body { @apply bg-paper text-ink font-sans antialiased; }
+  a { @apply text-accent; }
+}
+
+/* HTML that markup can't carry utilities for: plugin output, Rouge, shared bits. */
+@layer components {
+  .kicker { @apply font-pixel text-[10px] leading-relaxed uppercase text-muted; }
+  .kicker a { @apply text-inherit no-underline hover:underline; }
+
+  .badge { @apply inline-block align-middle font-pixel text-[8px] leading-none uppercase px-[0.6em] py-[0.45em] border border-current rounded-sm; }
+  .badge--published, .badge--confirmed { @apply text-confirmed; }
+  .badge--draft, .badge--observed { @apply text-observed; }
+  .badge--guess, .badge--expected { @apply text-guess; }
+  .badge--planned { @apply text-planned; }
+
+  .pixelated { image-rendering: pixelated; }
+
+  .snippet { @apply my-6; }
+  .snippet pre { @apply m-0 overflow-x-auto bg-code p-4 rounded border-l-4 border-accent text-sm leading-relaxed; }
+  .snippet pre code { @apply bg-transparent p-0 text-ink; }
+  .snippet figcaption { @apply mt-1 text-sm text-muted; }
+  .snippet figcaption code { @apply bg-transparent p-0; }
+
+  .ram { @apply no-underline border-b-2 border-dotted border-current; }
+  .ram__addr { @apply ml-1 rounded bg-code px-1 py-0 font-mono text-[0.75em] text-muted; }
+  .prose .ram__addr::before, .prose .ram__addr::after { content: none; }
+
+  /* <details class="bench" markdown="1"><summary>On the bench</summary> … </details> */
+  .bench { @apply my-6 rounded border border-rule bg-surface px-4 py-2 text-sm; }
+  .bench > summary { @apply cursor-pointer font-mono text-xs uppercase tracking-wide text-muted; }
+  .bench[open] > summary { @apply mb-2; }
+  .ram--guess { @apply text-guess; }
+  .ram--observed { @apply text-observed; }
+  .ram--confirmed { @apply text-confirmed; }
+
+  .highlight .c, .highlight .c1, .highlight .cm { @apply text-muted italic; }
+  .highlight .k, .highlight .kd, .highlight .kr { @apply text-accent; }
+  .highlight .s, .highlight .s1, .highlight .s2 { @apply text-confirmed; }
+  .highlight .mi, .highlight .mf, .highlight .mh { @apply text-observed; }
+}
+
+/* Lightbox (assets/js/lightbox.js) */
+@layer components {
+  .lightbox { @apply m-auto max-h-none max-w-none bg-transparent p-0 text-white; }
+  .lightbox::backdrop { @apply bg-black/90; }
+}

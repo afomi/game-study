@@ -1,0 +1,76 @@
+---
+layout: default
+---
+{% assign slug = page.slug %}
+{% assign series = site.episodes | where: "game", slug | sort: "episode" %}
+<article>
+  <header class="mb-6">
+    <p class="kicker">Study No. {{ page.study }} · {{ page.publisher }} · {{ page.platform }} · {{ page.year }}</p>
+    <h1 class="mt-2 text-4xl font-bold leading-tight">{{ page.title }}</h1>
+  </header>
+
+  <div class="prose max-w-none prose-p:text-ink">
+    {{ content }}
+  </div>
+
+  <h2 class="mt-12 text-2xl font-bold">Made by</h2>
+  {% if page.credits and page.credits.size > 0 %}
+  <dl class="mt-3 space-y-3">
+    {% for c in page.credits %}
+    <div>
+      <dt class="font-semibold">{{ c.role }}</dt>
+      <dd>
+        {{ c.name }}
+        {% if c.source %}<a href="{{ c.source }}">source</a>{% endif %}
+      </dd>
+    </div>
+    {% endfor %}
+  </dl>
+  {% else %}
+  {% if page.credits_note %}
+  <div class="prose mt-3 max-w-none prose-p:text-ink">
+    {{ page.credits_note | markdownify }}
+  </div>
+  {% else %}
+  <p class="mt-3 text-muted">
+    Credits to come.
+    The people who made this game are named here once each credit is sourced — from the game's own credits screen, the manual, or an interview.
+  </p>
+  {% endif %}
+  {% endif %}
+
+  <h2
+    id="contents"
+    class="mt-12 text-2xl font-bold"
+  >Contents</h2>
+  <p class="mt-3 text-muted">
+    The book follows the game: one chapter per scene, in the order a player meets them.
+    Sketches are written in any order and land in their scene.
+  </p>
+  {% include contents.html game=slug %}
+
+  <h2 class="mt-12 text-2xl font-bold">Sketches, as written</h2>
+  <ol class="mt-3 list-decimal space-y-1 pl-6">
+    {% for ep in series %}
+    <li>
+      <a href="{{ ep.url | relative_url }}">{{ ep.title }}</a>
+      <span class="badge badge--{{ ep.status }} ml-2">{{ ep.status }}</span>
+    </li>
+    {% endfor %}
+  </ol>
+
+  <h2
+    id="ram"
+    class="mt-12 text-2xl font-bold"
+  >RAM map</h2>
+  {% include ram-table.html game=slug %}
+
+  <h2 class="mt-12 text-2xl font-bold">The remake</h2>
+  {% include play.html game=slug %}
+
+  <h2 class="mt-12 text-2xl font-bold">Bench</h2>
+  <dl class="mt-3">
+    <dt class="font-semibold">ROM SHA-1</dt>
+    <dd>{% if page.rom_sha1 %}<code class="font-mono text-sm">{{ page.rom_sha1 }}</code>{% else %}Not recorded yet — set when the bench is first run.{% endif %}</dd>
+  </dl>
+</article>

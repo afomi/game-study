@@ -1,0 +1,34 @@
+{% comment %}
+  {% include screenshot.html game="baseball-stars" name="pitch-view" caption="The view from behind the plate." %}
+  Shows a screenshot published with bench/promote.mjs. The frame number and the
+  attribution line come from _data/screens/<game>.yml, so every published frame is
+  credited to its game and traceable to the bench run that made it.
+  A missing record fails the build. Click opens the lightbox.
+{% endcomment %}
+{% assign rec = site.data.screens[include.game][include.name] %}
+{% unless rec %}{{ include.game | append: "/" | append: include.name | lab_fail: "screenshot record not found in _data/screens — publish it with bench/promote.mjs" }}{% endunless %}
+{% assign g = site.games | where: "slug", include.game | first %}
+{% assign url = '/assets/screens/' | append: include.game | append: '/' | append: include.name | append: '.png' | relative_url %}
+<figure class="not-prose my-6">
+  <a
+    href="{{ url }}"
+    data-lightbox="{{ page.url }}"
+    data-caption="{{ include.caption }} · {{ g.title }} ({{ g.publisher }}, {{ g.year }}), frame {{ rec.frame }}"
+  >
+    <img
+      class="pixelated block h-auto w-full max-w-[512px] bg-screen"
+      src="{{ url }}"
+      alt="{{ include.alt | default: include.caption }}"
+      width="256"
+      height="240"
+      loading="lazy"
+    >
+  </a>
+  <figcaption class="mt-1 text-sm text-muted">
+    {{ include.caption }}
+    <span class="mt-0.5 block text-xs">
+      Screenshot: {{ g.title }} ({{ g.publisher }}, {{ g.year }}), frame {{ rec.frame }}.
+      Used for commentary and education.
+    </span>
+  </figcaption>
+</figure>

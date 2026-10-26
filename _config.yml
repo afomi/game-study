@@ -1,0 +1,55 @@
+title: Game Study
+tagline: Rebuilding classic games, frame by frame.
+series_of: Civic Studio
+series_of_url: https://civic.studio
+description: >-
+  A Civic Studio series. Studies of classic games — screenshots, RAM
+  variables, the code behind each system — rebuilt as playable web remakes.
+url: https://games.civic.studio
+baseurl: ""
+
+# Each game's remake lives in its own repo. Snippets are read from those
+# repos at build time, never copied: {% snippet <repo>:<path> match:TEXT %}.
+# Paths are relative to this directory.
+code_roots:
+  baseball-stars: ../baseball-stars
+  lab: .
+# Optional: link snippet captions to hosted repos, e.g.
+# code_urls:
+#   baseball-stars: https://github.com/afomi/baseball-stars/blob/main
+code_urls: {}
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+collections:
+  games:
+    output: true
+    permalink: /:name/
+  episodes:
+    output: true
+    permalink: /:path/
+
+defaults:
+  - scope: { type: episodes }
+    values: { layout: episode }
+  - scope: { type: games }
+    values: { layout: game }
+
+exclude:
+  - tmp        # local ROM collections: never build or publish
+  - "*.nes"
+  - "*.zip"
+  - test
+  - bench
+  - workbench   # ROM-derived; local only, see _config.workbench.yml
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - PLAN.md
+  - package.json
+  - package-lock.json
+  - node_modules
+  - assets/css/tailwind.css   # compiled to main.css by _plugins/tailwind.rb

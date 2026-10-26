@@ -1,0 +1,28 @@
+{% comment %}
+  {% include play.html game="baseball-stars" %}
+  Embeds the remake from /assets/game/<game>.js (built by `npm run games`).
+  Keys only reach the game while the screen has focus.
+{% endcomment %}
+<figure class="not-prose my-6">
+  <canvas
+    class="pixelated block aspect-[256/240] h-auto w-full max-w-[512px] cursor-pointer bg-screen outline-offset-4 focus:outline-3 focus:outline-accent"
+    data-lab-game="{{ include.game }}"
+    tabindex="0"
+    width="256"
+    height="240"
+    aria-label="Playable remake of {{ include.game }}. Click to focus, then use the keyboard."
+  ></canvas>
+  <figcaption class="mt-1 text-sm text-muted">
+    Click the screen to play.
+    Player 1: WASD to move, J/K for A/B, Enter for Start.
+    Player 2: arrow keys, numpad 1/2, numpad Enter.
+  </figcaption>
+</figure>
+<script type="module">
+  import { mount } from '{{ "/assets/game/" | append: include.game | append: ".js" | relative_url }}'
+
+  for (const canvas of document.querySelectorAll('canvas[data-lab-game="{{ include.game }}"]:not([data-mounted])')) {
+    canvas.dataset.mounted = ''
+    mount(canvas, { fit: 'none', keyTarget: canvas })
+  }
+</script>

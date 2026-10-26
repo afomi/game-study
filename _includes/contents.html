@@ -1,0 +1,74 @@
+{% comment %}
+  {% include contents.html game="baseball-stars" %}
+  The book's table of contents, generated from _data/storyboard/<game>.yml.
+  Parts are the game's acts; chapters are its scenes, in the order a player meets them.
+  In the workbench build, observed scenes show their bench shot; click to open (lightbox).
+{% endcomment %}
+{% assign board = site.data.storyboard[include.game] %}
+{% assign episodes = site.episodes | where: "game", include.game %}
+{% assign chapter = 0 %}
+<ol class="mt-6 space-y-10">
+  {% for act in board.acts %}
+  {% assign system = board.systems | where: "id", act.interlude | first %}
+  <li>
+    <p class="kicker">Part {{ forloop.index }}</p>
+    <h3 class="mt-1 mb-4 text-xl font-bold">{{ act.title }}</h3>
+    <ol class="space-y-3">
+      {% for scene in act.scenes %}
+      {% assign chapter = chapter | plus: 1 %}
+      {% if site.workbench and scene.shot %}
+      {% assign shot_path = "/workbench/" | append: include.game | append: "/runs/" | append: scene.shot | append: ".png" %}
+      {% assign shot = site.static_files | where: "path", shot_path | first %}
+      {% else %}
+      {% assign shot = nil %}
+      {% endif %}
+      {% assign told = episodes | where: "scene", scene.id %}
+      <li
+        id="scene-{{ scene.id }}"
+        class="flex items-start gap-4 target:bg-code"
+      >
+        {% if shot %}
+        <a
+          class="shrink-0"
+          href="{{ shot_path | relative_url }}"
+          data-lightbox="contents-{{ include.game }}"
+          data-caption="{{ chapter }}. {{ scene.title }} · {{ scene.shot }}"
+        >
+          <img
+            class="pixelated block h-[75px] w-20 bg-screen hover:outline-2 hover:outline-accent"
+            src="{{ shot_path | relative_url }}"
+            alt="{{ scene.title }}"
+            width="80"
+            height="75"
+            loading="lazy"
+          >
+        </a>
+        {% else %}
+        <span
+          class="block h-[75px] w-20 shrink-0 border border-dashed border-rule"
+          title="{% if scene.shot %}Bench shot {{ scene.shot }} (workbench build only){% else %}Not seen on the bench yet{% endif %}"
+        ></span>
+        {% endif %}
+        <div class="min-w-0">
+          <p class="flex flex-wrap items-baseline gap-x-2">
+            <strong>{{ chapter }}. {{ scene.title }}</strong>
+            <span class="badge badge--{{ scene.status }}">{{ scene.status }}</span>
+            {% for ep in told %}
+            <a href="{{ ep.url | relative_url }}">{{ ep.title }}</a>
+            <span class="badge badge--{{ ep.status }}">{{ ep.status }}</span>
+            {% endfor %}
+          </p>
+          <p class="text-sm text-muted">{{ scene.what }}</p>
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+    {% if system %}
+    <p class="mt-4 border-l-4 border-accent pl-3">
+      <span class="kicker block">Under the hood</span>
+      {{ system.title }}
+    </p>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ol>

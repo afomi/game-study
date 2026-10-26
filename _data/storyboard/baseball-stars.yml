@@ -1,0 +1,270 @@
+# Storyboard: the game's scenes in the order a player meets them.
+#
+# This is the spine of the book. The table of contents, the .tldr storyboard
+# (~/workspace/tldrawings/game-study.tldr), and each sketch's place in
+# the book are all generated from this file. Validated at build time.
+#
+# Acts become the book's parts; each scene is a chapter; each act closes with
+# an "under the hood" interlude on the system that act shows off best.
+# Sketches are *written* in any order (the pitch came first) and *placed* in
+# the book by their `scene:`.
+#
+# status: expected (from memory of the game, not yet seen on the bench)
+#       | observed (seen on the bench; `shot` names the evidence)
+# shot:   <run>/<shot> in workbench/<game>/runs/ — the bench screenshot that shows it.
+#         Required when observed. Local only (ROM-derived); shown in the workbench build.
+# remake: <repo>:<path> of the remake code that plays this scene, if any.
+# scene_byte: the value(s) of $0484 while this scene runs (enter, then run), where known.
+
+acts:
+  - id: pregame
+    title: Before the first pitch
+    interlude: frame-loop
+    scenes:
+      - id: power-on
+        scene_byte: [12, 13]
+        title: Power on
+        what: A white screen, a blue SNK logo, then a small title card.
+        nes: Reset vector, PPU warm-up wait, clearing RAM, first nametable upload. The debugger also catches the game reading RAM it never wrote.
+        status: observed
+        shot: attract/t001
+      - id: title
+        scene_byte: [0, 1]
+        title: Title screen
+        what: The green logo scrolls past like a marquee over a skyline of players, above a batter portrait. ©1989 SNK Corp. of America.
+        nes: Full-screen nametable art, scrolled horizontally for the marquee.
+        remake: baseball-stars:src/phases/title.js
+        status: observed
+        shot: attract/t008
+      - id: attract-demo
+        scene_byte: [8, 17, 9]
+        title: The game plays itself
+        what: Leave the title alone for about forty seconds and two teams play a demo game.
+        nes: A demo is either recorded inputs played back, or the CPU playing both sides.
+        status: observed
+        shot: attract/t053
+      - id: main-menu
+        scene_byte: [6, 7]
+        title: Main menu
+        what: League play, VS, view team, make team, end play — and, once you've made a team, hire player, fire player, and remove team.
+        nes: Menu cursor driven by the game-mode byte and a jump table; down from view team skips to end play.
+        status: observed
+        shot: menus/f0600
+      - id: vs-menu
+        scene_byte: [7]
+        title: VS
+        what: One player, two players, or computer play.
+        nes: The same menu engine as the main menu, different table.
+        status: observed
+        shot: menu-vs/f0710
+      - id: team-select
+        scene_byte: [7]
+        title: Select team
+        what: Eight team emblems with room for more; the team under the cursor shows its initials (AD).
+        nes: Team and player ratings as tables in PRG-ROM — data to extract, not to guess.
+        remake: baseball-stars:src/state/teams.js
+        status: observed
+        shot: vs-1player/f0950
+      - id: view-team
+        title: View team
+        what: Any team's 18 players, then a card per player — portrait, value in dollars, position and delivery ("PIT RO" — pitcher, right, overhand), and six ratings whose sum is the player's POINTs.
+        nes: Player records as fixed-size rows; the card's bars are drawn from the same bytes as the numbers.
+        scene_byte: [22, 23]
+        status: observed
+        shot: view-team-0/f1230
+      - id: make-team
+        scene_byte: [20, 21]
+        title: Make a team
+        what: Start from a strength — consistent hitters, strong pitchers, power hitters, veterans, good defense, balanced, fast runners, or "?" — and the game suggests a name to match.
+        nes: Each strength likely seeds ratings from a table; the new team is kept in battery-backed cartridge RAM.
+        status: observed
+        shot: menu-make-team/f0950
+      - id: name-team
+        title: Name your team
+        what: Two lines of eight letters, picked from a strip that wraps — A to Z, punctuation, a space, arrows, and END.
+        nes: A cursor into a character table, writing tile numbers into a name buffer that the battery keeps.
+        scene_byte: [21]
+        status: observed
+        shot: make-team-03-name/left1
+      - id: riddles
+        title: Two riddles
+        what: Dance the cursor around the strengths in just the right way and the suggested name becomes a question — WHAT IS A WREN? or WHEN ISNT IT? Answer exactly ("A BIRD." / "WHEN" "IT IS.", full stops included) and the team is made of women, or of stars.
+        nes: The name screen checks the whole name when you press END; the riddles in the Japanese version are lines from the Ogura Hyakunin Isshu.
+        scene_byte: [21]
+        status: observed
+        shot: egg-wren-unlock/riddle
+      - id: team-logo
+        title: Pick a logo
+        what: Thirteen emblems, pointed at by a little batter; then "ARE YOU SURE?".
+        nes: An index into the emblem tiles, saved with the team.
+        scene_byte: [21]
+        status: observed
+        shot: make-team-04-end/f1290
+      - id: matchup
+        title: The matchup
+        what: The two team names typed out letter by letter — "AMERICAN DREAMS vs NINJA BLACKSOX".
+        nes: Text drawn into the nametable one tile per few frames, while the menu scene still runs.
+        scene_byte: [7]
+        status: observed
+        shot: game-02-opponent/f1100
+      - id: lineup
+        title: Lineup
+        what: Each team's batting order — number, position, batting hand, name — then START GAME. The Blacksox are Kozo, Kuno, Yaichi, Hanzo, Benkei, Inuma, Jyubei, Bonten, Sasuke.
+        nes: Roster order as an index list into the team's player table.
+        scene_byte: [8, 17, 18, 19]
+        status: observed
+        shot: game-03-start/f1720
+
+  - id: play-ball
+    title: Play ball
+    interlude: sprites-and-scroll
+    scenes:
+      - id: scoreboard
+        scene_byte: [10, 11]
+        title: Play ball!
+        what: A stadium scoreboard announces the game, team initials lit.
+        nes: Full-screen nametable with the team initials patched in.
+        status: observed
+        shot: attract/t043
+      - id: pitching
+        scene_byte: [2, 3]
+        title: The pitch
+        what: The view from behind the plate — pitcher, batter, a mini diamond, the count, and cards for the batter (average, home runs) and pitcher (ERA). Every call shows the pitch speed in M/H.
+        nes: Ball position and velocity in fixed point; a fake third dimension drawn as height plus shadow.
+        remake: baseball-stars:src/phases/pitching.js
+        status: observed
+        shot: attract/t053
+      - id: batting
+        title: The swing
+        what: The pitch takes about 28 frames to reach the plate; the bat comes around in four; then the screen goes black for three frames and the field appears with the ball already in play.
+        nes: Swing timing measured in frames; contact quality picked from a table. The black frames are the field scene setting up with rendering off.
+        remake: baseball-stars:src/phases/batting.js
+        scene_byte: [3, 4]
+        status: observed
+        shot: swing-01/f2756
+      - id: fielding
+        scene_byte: [4, 5]
+        title: The field
+        what: The view cuts to a diagonal, scrolling field; fielders chase the ball.
+        nes: A field larger than one screen, scrolled; more than 8 sprites on a line means flicker.
+        remake: baseball-stars:src/phases/fielding.js
+        status: observed
+        shot: attract/t059
+      - id: baserunning
+        title: On the bases
+        what: Leads, steals, tags, and the race to the bag, called SAFE or OUT in a box at the base.
+        nes: One small state machine per runner, updated each frame.
+        remake: baseball-stars:src/phases/fielding.js
+        scene_byte: [5]
+        status: observed
+        shot: game-05-mash/f12180
+      - id: calls
+        title: The umpire's call
+        what: STRIKE, BALL, STRIKE OUT, and FOUL appear as boxed words, with the pitch speed underneath — "STRIKE OUT · 93 M/H".
+        nes: Big text drawn as sprites or a nametable patch over the action.
+        remake: baseball-stars:src/phases/batting.js
+        status: observed
+        shot: game-03-start/f3550
+
+  - id: big-moments
+    title: Big moments
+    interlude: banks-and-sound
+    scenes:
+      - id: home-run
+        title: Home run
+        what: The ball drops into the crowd, then a HOME RUN board under a row of SNK banners, with the batter and pitcher in small portraits and the distance — 400.
+        nes: Plays inside the ball-in-play scene (5), not as a scene of its own; the board's art is a full screen of its own tiles.
+        scene_byte: [5]
+        status: observed
+        shot: game-05-mash/f13080
+      - id: substitution
+        title: Change the pitcher
+        what: The manager calls TIME over the at-bat, then RELIEF PITCHER — the bullpen as a list, each arm with an ERA and a throwing hand.
+        nes: Stamina counters per player, a menu over the paused game.
+        scene_byte: [14, 16, 15]
+        status: observed
+        shot: game-06-nine-innings/f77760
+      - id: inning-change
+        title: Side retired
+        what: The stadium scoreboard again, now with a marquee ("WELCOME TO SNK STADIUM"), a game clock, a 10-inning line score, and hits and errors.
+        nes: The same scene pair as "Play ball!" (10 → 11), with different text.
+        remake: baseball-stars:src/phases/inning-change.js
+        scene_byte: [10, 11]
+        status: observed
+        shot: game-05-mash/f17940
+      - id: game-over
+        title: Final out
+        what: Or no final out at all — down 10-0, the scoreboard reads CALLED GAME, with an X where the home team didn't need to bat.
+        nes: End-of-game check run after every out and every run, with a run-difference rule.
+        remake: baseball-stars:src/phases/game-over.js
+        scene_byte: [10, 11]
+        status: observed
+        shot: game-06-nine-innings/f30600
+
+  - id: season
+    title: The long season
+    interlude: battery-save
+    scenes:
+      - id: make-league
+        scene_byte: [28, 29]
+        title: Make a league
+        what: Choose how many teams and how many games.
+        nes: League settings written to battery-backed RAM before the first game.
+        status: observed
+        shot: menu-league/f0950
+      - id: league-menu
+        title: The league
+        what: Continue play, see standings, or start a new league; before each game between computer teams, "DO YOU WANT TO WATCH THE GAME?"
+        nes: The league's schedule and results live in battery-backed RAM.
+        scene_byte: [28, 29]
+        status: observed
+        shot: make-team-04-end/f3060
+      - id: rewards
+        title: The gate
+        what: Two owners face off, one grim and one grinning, over the attendance (35,000) and each team's take in dollars.
+        nes: Money written back to the saved team; in an exhibition both teams take $0.
+        scene_byte: [27, 24, 25]
+        status: observed
+        shot: game-06-nine-innings/f30960
+      - id: standings
+        title: Standings
+        what: A head-to-head grid — every team's logo against every other, with results in each cell and blue squares where a team would meet itself.
+        nes: Win and loss records kept in cartridge RAM so the season survives power-off.
+        scene_byte: [28, 29]
+        status: observed
+        shot: make-team-04-end/f3330
+      - id: hire-player
+        title: Hire a player
+        what: Choose a style — rookie, veteran, or star player; overhand or sidearm; right or left — and meet a prospect with a price, a few POINTs, and a ceiling (MAX). Back out and ask again, and the ceiling changes.
+        nes: A prospect generated from the style plus a random roll; a full 18-man roster refuses ("TOO MANY PLAYERS").
+        scene_byte: [34, 35]
+        status: observed
+        shot: hire-03-hire/f3910
+      - id: fire-player
+        title: Fire a player
+        what: Pick a player, choose FIRE or KEEP — and watch him walk away down a long road at dusk, his dog beside him. "PIT-A1 WAS FIRED."
+        nes: A full-screen cutscene of its own tiles inside the fire scene.
+        scene_byte: [32, 33]
+        status: observed
+        shot: hire-02-fire-then-hire/f3060
+      - id: power-off
+        title: Before you switch off
+        what: "WARNING!! When turning game off, first press reset and hold, then press the power button or memory may be lost."
+        nes: Holding reset stops the CPU, so a half-finished write can't corrupt the saved league as the power drops.
+        status: observed
+        shot: menu-end-play/f0950
+
+# "Under the hood" interludes: systems that run under every scene.
+systems:
+  - id: frame-loop
+    title: The frame loop and the mode byte
+    what: How one interrupt sixty times a second runs the whole game, and how one byte decides which screen you're on.
+  - id: sprites-and-scroll
+    title: Sprites, scrolling, and flicker
+    what: Sixty-four sprites, eight to a line, and a field bigger than the screen.
+  - id: banks-and-sound
+    title: Banks and sound
+    what: Swapping graphics in and out of the cartridge, and the five-channel sound chip.
+  - id: battery-save
+    title: The battery in the cartridge
+    what: How a season survived being switched off in 1989.

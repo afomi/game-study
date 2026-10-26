@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
+  <meta
+    name="description"
+    content="{{ page.summary | default: site.description | strip }}"
+  >
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;600&display=swap"
+  >
+  <link
+    rel="stylesheet"
+    href="{{ '/assets/css/main.css' | relative_url }}"
+  >
+  <script
+    type="module"
+    src="{{ '/assets/js/lightbox.js' | relative_url }}"
+  ></script>
+</head>
+<body class="min-h-screen">
+  <header class="mx-auto flex max-w-3xl flex-wrap items-baseline justify-between gap-2 border-b-2 border-ink px-4 pt-6 pb-4">
+    <a
+      class="font-pixel text-xs tracking-wide text-ink no-underline"
+      href="{{ '/' | relative_url }}"
+    >{{ site.title }}</a>
+    <a
+      class="text-sm text-muted no-underline hover:underline"
+      href="{{ site.series_of_url }}"
+    >a {{ site.series_of }} series</a>
+  </header>
+  <main class="mx-auto px-4 py-8 {{ page.width | default: 'max-w-3xl' }}">
+    {{ content }}
+  </main>
+  <footer class="mx-auto max-w-3xl border-t border-rule px-4 pt-4 pb-8 text-sm text-muted">
+    <p>
+      {{ site.title }} is a {{ site.series_of }} series: {{ site.tagline | downcase | remove: "." }}.
+    </p>
+    <p class="mt-2">
+      Bring your own ROM.
+      No game data is distributed here — only observations, measurements, and original code.
+    </p>
+    <p class="mt-2">
+      Game titles and trademarks belong to their owners.
+      {{ site.title }} is an independent study, not affiliated with or endorsed by any publisher or platform holder.
+    </p>
+  </footer>
+</body>
+</html>

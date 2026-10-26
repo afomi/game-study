@@ -1,0 +1,301 @@
+# RAM map for Baseball Stars (NES), built up episode by episode.
+# Validated at build time by _plugins/lab.rb — a bad entry fails the build.
+#
+# - addr: "$0000"          # CPU address, uppercase hex, quoted
+#   name: snake_case_name  # referenced in posts as {% ram baseball-stars name %}
+#   size: 1                # bytes
+#   desc: What it holds, in one sentence.
+#   confidence: guess      # guess | observed | confirmed
+#   remake: src/path.js NAME  # (optional) the remake's counterpart
+#   episode: 01-the-pitch  # (optional) where it was found
+#
+# First entries: 2026-10-22, from disassembling RESET/NMI (bench/disasm.mjs)
+# and tracing values per frame (experiments scene-byte-attract, scene-byte-menus).
+
+- addr: "$0020"
+  name: ppuctrl_shadow
+  size: 1
+  desc: Copy of the value last meant for PPUCTRL; init sets $10, NMI-enable ORs in $80 before writing it.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$0021"
+  name: ppumask_shadow
+  size: 1
+  desc: Copy of PPUMASK; init sets $1E (background and sprites on), and the NMI writes it to $2001 every frame.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$0022"
+  name: mmc1_control_shadow
+  size: 1
+  desc: Last value written to the MMC1 control register by the 5-write routine at $C002; $1E at boot.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$002A"
+  name: nmi_busy
+  size: 1
+  desc: Set while the NMI handler runs; a second NMI that finds it set skips the frame's work and raises the overrun flag.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$002B"
+  name: mapper_busy
+  size: 1
+  desc: Raised around every 5-write MMC1 sequence; the NMI checks it ($D027) and leaves the mapper alone while it's set.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$0484"
+  name: scene
+  size: 1
+  desc: Index into the 42-entry jump table at $CCE1 (21 enter/run pairs); even values set a screen up, the following odd value runs it.
+  confidence: confirmed
+  remake: src/game.js Game#setPhase
+  episode: 02-the-frame-loop
+
+- addr: "$0486"
+  name: frame_ready
+  size: 1
+  desc: Main loop sets it, then spins until the NMI clears it — one pass of game logic per frame.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$04FD"
+  name: nmi_overrun
+  size: 1
+  desc: Set when an NMI arrives while the previous one is still busy; the main loop then reads the controllers itself ($D132), so no input is lost. Seen only on scene-entry frames.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$0025"
+  name: prg_bank_shadow
+  size: 1
+  desc: The 16 KB bank the main thread wants at $8000; set from $CD5F per scene pair, and restored after the NMI borrows the slot for the sound driver in bank 0.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$008F"
+  name: pad_held
+  size: 2
+  desc: Buttons held this frame, player 1 then player 2, read bit by bit from $4016/$4017 by $D158.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$0091"
+  name: pad_pressed
+  size: 2
+  desc: Buttons newly pressed this frame (held and not held last frame), player 1 then player 2.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$002F"
+  name: pads_held_any
+  size: 1
+  desc: Both players' held buttons ORed together, so either controller can drive the menus.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$0030"
+  name: pads_pressed_any
+  size: 1
+  desc: Both players' newly pressed buttons ORed together.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$0097"
+  name: pad_hold_timer
+  size: 2
+  desc: Counts frames a button stays held, per player; likely drives menu auto-repeat.
+  confidence: guess
+  episode: 02-the-frame-loop
+
+- addr: "$001F"
+  name: menu_cursor
+  size: 1
+  desc: Main-menu cursor; $12 on LEAGUE PLAY, $21 on VS.
+  confidence: guess
+
+- addr: "$00B1"
+  name: menu_page
+  size: 1
+  desc: Which page of scene 7 is showing — 1 main menu, 0 VS, 2 select team (from RAM dumps; unconfirmed).
+  confidence: guess
+
+- addr: "$0521"
+  name: cpu_pitch_plan
+  size: 1
+  desc: The buttons the computer pitcher has decided to hold for its next pitch (Right 1, Down 4, Down+Left 6 in the first inning); bank 0 copies it into pitch_buttons ($B0DC), exactly where a human's controller would go. Sketch 01 first spotted it "rising with speed" — because Down is the fastball.
+  confidence: confirmed
+  episode: 01-the-pitch
+
+- addr: "$04B4"
+  name: pitch_speed_class
+  size: 1
+  desc: Also rises with speed (0, 1, 3 for 81, 89, 93 M/H); a coarser class, or a second index.
+  confidence: guess
+  episode: 01-the-pitch
+
+- addr: "$042A"
+  name: pitch_travel_frames
+  size: 1
+  desc: Falls as speed rises (46, 45, 43 for 81, 89, 93 M/H) — perhaps frames from release to the plate. $0400 and $001F carry the same values.
+  confidence: guess
+  episode: 01-the-pitch
+
+- addr: "$051A"
+  name: pitch_speed
+  size: 2
+  desc: The pitch's speed in sixteenths of a mile per hour (low byte first), copied once from ball_velocity as the ball heads for the plate. The call box shows it rounded to whole M/H — 1417 shows as 89.
+  confidence: confirmed
+  remake: src/model/pitcher.js radarMph
+  episode: 01-the-pitch
+
+- addr: "$00B2"
+  name: ball_velocity
+  size: 2
+  desc: How fast the pitch is moving toward the plate, in sixteenths of M/H; added to the ball's position every frame. Set at release by $9600 (bank 6) from base speed, the button held, and a random byte — 24 of 24 bench pitches reproduced exactly.
+  confidence: confirmed
+  remake: src/model/pitcher.js Pitcher#releaseSpeed
+  episode: 01-the-pitch
+
+- addr: "$00B0"
+  name: ball_velocity_sideways
+  size: 2
+  desc: The sideways part of the pitch, split off from ball_velocity by a sine-table lookup when the pitch is aimed — which is why the radar can read a little under the release speed.
+  confidence: observed
+  episode: 01-the-pitch
+
+- addr: "$0506"
+  name: pitcher_base_speed
+  size: 4
+  desc: Each side's pitcher's base speed (low bytes at $0506-$0507, high at $0508-$0509), looked up from the pitcher's SPEED rating in a 16-entry table at $ACEA (bank 4) — 528 at 0, 672 at 15.
+  confidence: confirmed
+  remake: src/model/pitcher.js Pitcher#baseSpeed
+  episode: 01-the-pitch
+
+- addr: "$0094"
+  name: pitch_buttons
+  size: 1
+  desc: The pitcher's controller slot — the buttons held right now (Up $08, Down $04, Left $02, Right $01). A human's pad is copied in every frame ($C51C); the computer writes cpu_pitch_plan instead. All the pitching code reads this slot and never the controller, so it can't tell who is pitching.
+  confidence: confirmed
+  remake: src/model/pitch.js Pitch#step
+  episode: 01-the-pitch
+
+- addr: "$0093"
+  name: batter_buttons
+  size: 1
+  desc: The batter's controller slot, filled the same way as pitch_buttons — from the batter's pad, or by the computer batter ($BCD2, bank 0). $0095 and $0096 hold the newly pressed buttons for batter and pitcher.
+  confidence: observed
+  episode: 01-the-pitch
+
+- addr: "$00BA"
+  name: ball_x
+  size: 2
+  desc: The pitch's sideways position, 16-bit and wrapping; set at release from where the pitcher stands on the mound (Left or Right before the throw moves it).
+  confidence: confirmed
+  remake: src/model/pitch.js Pitch#move
+  episode: 01-the-pitch
+
+- addr: "$00BD"
+  name: ball_depth
+  size: 2
+  desc: How far the pitch has come toward the plate, 16-bit and wrapping; ball_velocity is added every frame. The game uses its high byte as a clock for the flight — steering works from $50 to $DF, the drop starts at $A8.
+  confidence: confirmed
+  remake: src/model/pitch.js Pitch#move
+  episode: 01-the-pitch
+
+- addr: "$00C0"
+  name: ball_height
+  size: 2
+  desc: The pitch's height — $1200 for every pitch, the whole way, unless it's a drop ball.
+  confidence: confirmed
+  remake: src/model/pitch.js PITCH_HEIGHT
+  episode: 01-the-pitch
+
+- addr: "$00B4"
+  name: ball_fall_speed
+  size: 2
+  desc: Zero for a normal pitch. A drop ball gets -682 ($FD56) near the plate ($98D5); while it's falling, the ball loses that much height a frame and its forward speed is multiplied by 220/256 ($9837).
+  confidence: confirmed
+  remake: src/model/pitch.js Pitch#fall
+  episode: 01-the-pitch
+
+- addr: "$0518"
+  name: drop_ball
+  size: 1
+  desc: Set to 8 when Up is held at release and the R CURVE roll succeeds; cleared when the drop starts. Holding Down in flight doesn't touch it — no code reads Down after release.
+  confidence: confirmed
+  remake: src/model/pitch.js Pitch#startDrop
+  episode: 01-the-pitch
+
+- addr: "$0517"
+  name: steer_frames
+  size: 1
+  desc: Counts the frames the pitcher has bent the pitch with Left or Right ($99B9); what reads it is open.
+  confidence: observed
+  episode: 01-the-pitch
+
+- addr: "$00C3"
+  name: pitch_flags
+  size: 1
+  desc: Bit 1 is set when a drop ball hits the ground; bit 0 is set by a strike-zone check as the ball reaches the plate ($98F0). The rest is open.
+  confidence: guess
+  episode: 01-the-pitch
+
+- addr: "$0033"
+  name: random
+  size: 1
+  desc: A byte the game uses as its dice; the release routine takes the pitch's jitter (0-15) from its middle bits and the fastball's extra from its low bits.
+  confidence: observed
+  episode: 01-the-pitch
+
+- addr: "$0510"
+  name: pitcher_stamina_left
+  size: 2
+  desc: One byte per side that falls with each pitch (180, 173, 166, 153 for Sasuke); when it reaches zero the release routine starts slowing pitches with a cosine. How it fills and drains is open.
+  confidence: guess
+  episode: 01-the-pitch
+
+- addr: "$0300"
+  name: screen_queue
+  size: 64
+  desc: Screen updates waiting for the next vblank — a video address, then tiles, ended by $FF. The main thread fills it through $D7A9; the NMI empties it into the PPU.
+  confidence: observed
+  episode: 02-the-frame-loop
+
+- addr: "$00BB"
+  name: letter_strip_cursor
+  size: 1
+  desc: The highlighted character on the name-entry strip — eight to a group, five used (A–E is 0–4, F–J is 8–12), END is 76.
+  confidence: confirmed
+  episode: 03-eight-teams-and-yours
+
+- addr: "$00BC"
+  name: name_cursor
+  size: 1
+  desc: Which of the sixteen letters of a team name is being typed (eight a line).
+  confidence: confirmed
+  episode: 03-eight-teams-and-yours
+
+- addr: "$6700"
+  name: made_team_name
+  size: 16
+  desc: The first made team's name in battery-backed cartridge RAM, two lines of eight plain ASCII letters.
+  confidence: observed
+  episode: 03-eight-teams-and-yours
+
+- addr: "$78A1"
+  name: made_team_players
+  size: 288
+  desc: The first made team's 18 players, 16 bytes each — a six-letter ASCII name, then ten bytes of data; bit 7 of the ninth byte is set for a left-hander. A fired player's name becomes six spaces.
+  confidence: observed
+  episode: 03-eight-teams-and-yours
+
+- addr: "$6200"
+  name: roster_being_edited
+  size: 288
+  desc: A working copy of the made team's players while you hire and fire, in the same 16-byte records.
+  confidence: observed
+  episode: 03-eight-teams-and-yours

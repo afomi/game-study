@@ -1,0 +1,37 @@
+---
+layout: default
+---
+<section>
+  <h1 class="text-4xl font-bold">{{ site.title }}</h1>
+  <p class="mt-2 text-2xl">{{ site.tagline }}</p>
+  <p class="mt-3 text-xl text-muted">
+    In art, a study is a copy you make of a master's work to learn how it was made.
+    These are studies of classic games, one system at a time.
+    Each sketch pairs screenshots and narrative with the variables and code behind them — and ends with working code you can play.
+  </p>
+  <p class="mt-4">
+    It's made for the fun of it.
+    It's for anyone curious about how these games were built.
+    It honors the people who made them.
+    And it tries to keep the games alive, rebuilt for the web.
+  </p>
+</section>
+
+{% assign studies = site.games | sort: "study" %}
+{% for game in studies %}
+{% assign series = site.episodes | where: "game", game.slug | sort: "episode" %}
+<section class="mt-10 border-t border-rule pt-4">
+  <h2 class="text-2xl font-bold">
+    <a href="{{ game.url | relative_url }}">{{ game.title }}</a>
+  </h2>
+  <p class="kicker mt-1">Study No. {{ game.study }} · {{ game.publisher }} · {{ game.platform }} · {{ game.year }}</p>
+  <ol class="mt-3 list-decimal space-y-1 pl-6">
+    {% for ep in series %}
+    <li>
+      <a href="{{ ep.url | relative_url }}">{{ ep.title }}</a>
+      <span class="badge badge--{{ ep.status }} ml-2">{{ ep.status }}</span>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endfor %}
