@@ -76,7 +76,7 @@ try {
     }
 
     check('no ROM-derived workbench in the normal build', !existsSync(join(site, 'workbench')))
-    const romish = walk(site).filter((f) => /\.(nes|fds|unf|zip|7z)$/i.test(f) || f.includes('/tmp/'))
+    const romish = walk(site).map((f) => f.slice(site.length)).filter((f) => /\.(nes|fds|unf|zip|7z)$/i.test(f) || f.includes('/tmp/'))
     check('no ROMs or archives anywhere in the build', romish.length === 0, romish.slice(0, 3).join(', '))
     const css = join(site, 'assets/css/main.css')
     check('Tailwind compiled main.css', existsSync(css) && statSync(css).size > 5000, existsSync(css) ? `${statSync(css).size} bytes` : 'missing')
