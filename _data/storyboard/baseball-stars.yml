@@ -13,7 +13,6 @@
 #       | observed (seen on the bench; `shot` names the evidence)
 # shot:   <run>/<shot> in workbench/<game>/runs/ — the bench screenshot that shows it.
 #         Required when observed. Local only (ROM-derived); shown in the workbench build.
-# remake: <repo>:<path> of the remake code that plays this scene, if any.
 # scene_byte: the value(s) of $0484 while this scene runs (enter, then run), where known.
 
 acts:
@@ -33,7 +32,6 @@ acts:
         title: Title screen
         what: The green logo scrolls past like a marquee over a skyline of players, above a batter portrait. ©1989 SNK Corp. of America.
         nes: Full-screen nametable art, scrolled horizontally for the marquee.
-        remake: baseball-stars:src/phases/title.js
         status: observed
         shot: attract/t008
       - id: attract-demo
@@ -62,7 +60,6 @@ acts:
         title: Select team
         what: Eight team emblems with room for more; the team under the cursor shows its initials (AD).
         nes: Team and player ratings as tables in PRG-ROM — data to extract, not to guess.
-        remake: baseball-stars:src/state/teams.js
         status: observed
         shot: vs-1player/f0950
       - id: view-team
@@ -131,14 +128,12 @@ acts:
         title: The pitch
         what: The view from behind the plate — pitcher, batter, a mini diamond, the count, and cards for the batter (average, home runs) and pitcher (ERA). Every call shows the pitch speed in M/H.
         nes: Ball position and velocity in fixed point; a fake third dimension drawn as height plus shadow.
-        remake: baseball-stars:src/phases/pitching.js
         status: observed
         shot: attract/t053
       - id: batting
         title: The swing
         what: The pitch takes about 28 frames to reach the plate; the bat comes around in four; then the screen goes black for three frames and the field appears with the ball already in play.
         nes: Swing timing measured in frames; contact quality picked from a table. The black frames are the field scene setting up with rendering off.
-        remake: baseball-stars:src/phases/batting.js
         scene_byte: [3, 4]
         status: observed
         shot: swing-01/f2756
@@ -147,14 +142,12 @@ acts:
         title: The field
         what: The view cuts to a diagonal, scrolling field; fielders chase the ball.
         nes: A field larger than one screen, scrolled; more than 8 sprites on a line means flicker.
-        remake: baseball-stars:src/phases/fielding.js
         status: observed
         shot: attract/t059
       - id: baserunning
         title: On the bases
         what: Leads, steals, tags, and the race to the bag, called SAFE or OUT in a box at the base.
         nes: One small state machine per runner, updated each frame.
-        remake: baseball-stars:src/phases/fielding.js
         scene_byte: [5]
         status: observed
         shot: game-05-mash/f12180
@@ -162,7 +155,6 @@ acts:
         title: The umpire's call
         what: STRIKE, BALL, STRIKE OUT, and FOUL appear as boxed words, with the pitch speed underneath — "STRIKE OUT · 93 M/H".
         nes: Big text drawn as sprites or a nametable patch over the action.
-        remake: baseball-stars:src/phases/batting.js
         status: observed
         shot: game-03-start/f3550
 
@@ -188,7 +180,6 @@ acts:
         title: Side retired
         what: The stadium scoreboard again, now with a marquee ("WELCOME TO SNK STADIUM"), a game clock, a 10-inning line score, and hits and errors.
         nes: The same scene pair as "Play ball!" (10 → 11), with different text.
-        remake: baseball-stars:src/phases/inning-change.js
         scene_byte: [10, 11]
         status: observed
         shot: game-05-mash/f17940
@@ -196,7 +187,6 @@ acts:
         title: Final out
         what: Or no final out at all — down 10-0, the scoreboard reads CALLED GAME, with an X where the home team didn't need to bat.
         nes: End-of-game check run after every out and every run, with a run-difference rule.
-        remake: baseball-stars:src/phases/game-over.js
         scene_byte: [10, 11]
         status: observed
         shot: game-06-nine-innings/f30600

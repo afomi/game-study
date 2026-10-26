@@ -1,6 +1,12 @@
 ---
 layout: default
 ---
+{% comment %}
+  A study's front page. The page's own text carries the introduction, the history,
+  the gist of the game, and its key mechanics; this layout adds the teardowns
+  (every sketch with an `image:`, as screenshot cards), then the reference shelf:
+  how the studies are made, every scene, the RAM map, and the bench.
+{% endcomment %}
 {% assign slug = page.slug %}
 {% assign series = site.episodes | where: "game", slug | sort: "episode" %}
 <article>
@@ -9,64 +15,71 @@ layout: default
     <h1 class="mt-2 text-4xl font-bold leading-tight">{{ page.title }}</h1>
   </header>
 
-  <div class="prose max-w-none prose-p:text-ink">
+  <div class="prose max-w-none prose-headings:text-ink prose-p:text-ink prose-li:text-ink prose-strong:text-ink prose-a:text-accent">
     {{ content }}
   </div>
 
-  <h2 class="mt-12 text-2xl font-bold">Made by</h2>
-  {% if page.credits and page.credits.size > 0 %}
-  <dl class="mt-3 space-y-3">
-    {% for c in page.credits %}
-    <div>
-      <dt class="font-semibold">{{ c.role }}</dt>
-      <dd>
-        {{ c.name }}
-        {% if c.source %}<a href="{{ c.source }}">source</a>{% endif %}
-      </dd>
-    </div>
-    {% endfor %}
-  </dl>
-  {% else %}
-  {% if page.credits_note %}
-  <div class="prose mt-3 max-w-none prose-p:text-ink">
-    {{ page.credits_note | markdownify }}
-  </div>
-  {% else %}
+  <h2
+    id="teardowns"
+    class="mt-12 text-2xl font-bold"
+  >The teardowns</h2>
   <p class="mt-3 text-muted">
-    Credits to come.
-    The people who made this game are named here once each credit is sourced — from the game's own credits screen, the manual, or an interview.
+    One system at a time, from the screen down to the bytes.
   </p>
-  {% endif %}
+  <ul class="mt-4 grid gap-6 sm:grid-cols-2">
+    {% for ep in series %}
+    {% if ep.image %}
+    <li class="border border-rule p-3">
+      <a
+        class="block no-underline"
+        href="{{ ep.url | relative_url }}"
+      >
+        <img
+          class="pixelated block h-auto w-full bg-screen"
+          src="{{ '/assets/screens/' | append: slug | append: '/' | append: ep.image | append: '.png' | relative_url }}"
+          alt="{{ ep.image_alt | default: ep.title }}"
+          width="256"
+          height="240"
+          loading="lazy"
+        >
+        <span class="kicker mt-3 block">Sketch {{ ep.episode | prepend: "00" | slice: -2, 2 }}</span>
+        <span class="mt-1 block text-xl font-bold text-ink">{{ ep.title }}</span>
+      </a>
+      <p class="mt-1 text-sm text-muted">{{ ep.summary }}</p>
+      <span class="badge badge--{{ ep.status }} mt-2">{{ ep.status }}</span>
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+
+  {% assign method = series | where_exp: "ep", "ep.image == nil" %}
+  {% if method.size > 0 %}
+  <h2 class="mt-12 text-2xl font-bold">How these are made</h2>
+  <ul class="mt-3 space-y-1">
+    {% for ep in method %}
+    <li>
+      <a href="{{ ep.url | relative_url }}">{{ ep.title }}</a>
+      <span class="text-muted">— {{ ep.summary }}</span>
+    </li>
+    {% endfor %}
+  </ul>
   {% endif %}
 
   <h2
     id="contents"
     class="mt-12 text-2xl font-bold"
-  >Contents</h2>
+  >Every scene</h2>
   <p class="mt-3 text-muted">
-    The book follows the game: one chapter per scene, in the order a player meets them.
-    Sketches are written in any order and land in their scene.
+    The game, screen by screen, in the order a player meets them.
+    Each teardown lands in the scene it explains.
   </p>
   {% include contents.html game=slug %}
-
-  <h2 class="mt-12 text-2xl font-bold">Sketches, as written</h2>
-  <ol class="mt-3 list-decimal space-y-1 pl-6">
-    {% for ep in series %}
-    <li>
-      <a href="{{ ep.url | relative_url }}">{{ ep.title }}</a>
-      <span class="badge badge--{{ ep.status }} ml-2">{{ ep.status }}</span>
-    </li>
-    {% endfor %}
-  </ol>
 
   <h2
     id="ram"
     class="mt-12 text-2xl font-bold"
   >RAM map</h2>
   {% include ram-table.html game=slug %}
-
-  <h2 class="mt-12 text-2xl font-bold">The remake</h2>
-  {% include play.html game=slug %}
 
   <h2 class="mt-12 text-2xl font-bold">Bench</h2>
   <dl class="mt-3">

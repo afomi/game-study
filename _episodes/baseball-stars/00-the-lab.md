@@ -4,45 +4,28 @@ game: baseball-stars
 episode: 0
 status: published
 subsystem: method
-summary: In 1989 SNK fit a whole baseball league into a cartridge the size of a paperback. Here's how we'll learn how — by building it again.
+summary: How these teardowns are made — an emulator with no screen, experiments as short scripts, and small working models checked against the original.
 ---
 
 In 1989, SNK fit eight teams, a draft, a league you could save, and a pitcher's duel into 256 kilobytes.
 That's less than one photo on your phone.
 
-This series takes Baseball Stars apart one system at a time — the pitch, the swing, the draft, the season — and builds each one back up, in code you can read and a game you can play.
-
-## A remake made of guesses
-
-There's already a remake, and you can play it at the bottom of this page.
-It's a two-minute sketch of *a* baseball game.
-It isn't Baseball Stars.
-
-Every number that shapes how it plays was made up.
-Here's how fast a fielder runs:
-
-{% snippet baseball-stars:src/phases/fielding.js match:FIELDER_SPEED context:1 %}
-
-Sixty pixels a second sounded about right.
-The original has a real answer, sitting somewhere in its memory, and the only way to get it is to go and look.
-
-Or the pitches:
-
-{% snippet baseball-stars:src/phases/pitching.js match:PITCH_LIST %}
-
-Four pitch types with tidy modern names.
-Does the real game have anything like a pitch menu?
-That's the first thing [the pitch]({{ '/baseball-stars/01-the-pitch/' | relative_url }}) sets out to learn.
+This series takes Baseball Stars apart one system at a time — the pitch, the swing, the draft, the season — to see how each one works.
+Not from memory, and not from guesses: from the game itself, measured.
 
 ## How a sketch works
 
-Each sketch takes one system and builds it back up in five steps:
+Each sketch takes one system and works through it in five steps:
 
 1. **Look.** Play the original and say what you see.
 2. **Find.** Hunt through memory for the bytes that change when that thing happens.
 3. **Name.** Give each one a name, and say how sure we are.
 4. **Measure.** Repeat the moment, exactly, and record what the numbers do frame by frame.
-5. **Rebuild.** Put the real number into the remake, with a test that proves it.
+5. **Model.** Write the system as a small program, and check that it gives the same numbers as the original.
+
+That last step is the proof.
+If a few dozen lines of code can replay a real pitch, frame for frame, and land on exactly the numbers the game did, then we've understood it.
+If they can't, we haven't yet.
 
 ## Reading the numbers
 
@@ -70,9 +53,8 @@ An experiment is a short file: switch on, press these buttons on these exact fra
 The NES does the same thing every time it's given the same inputs, so anyone with the same cartridge gets the same frames, down to the pixel.
 Ninety seconds of game runs in about nine.
 
-## Play the remake
+## The models
 
-Here's where the remake starts, guesses and all.
-By the end of the series, every number in it will have come from the original.
-
-{% include play.html game="baseball-stars" %}
+When a system is understood, it becomes a model: a small JavaScript class that does what the original does, in the original's own units.
+The sketches quote them, and each comes with a test that replays recordings from the bench.
+They live with the study, in [`models/`](https://github.com/afomi/game-study/tree/main/models), so anyone can run them.

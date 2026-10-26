@@ -3,21 +3,20 @@ tagline: Rebuilding classic games, frame by frame.
 series_of: Civic Studio
 series_of_url: https://civic.studio
 description: >-
-  A Civic Studio series. Studies of classic games — screenshots, RAM
-  variables, the code behind each system — rebuilt as playable web remakes.
+  A Civic Studio series. Studies of classic games, one system at a time —
+  screenshots, the variables in memory, the code behind each system, and
+  small working models that reproduce what the original does.
 url: https://games.civic.studio
 baseurl: ""
 
-# Each game's remake lives in its own repo. Snippets are read from those
-# repos at build time, never copied: {% snippet <repo>:<path> match:TEXT %}.
-# Paths are relative to this directory.
+# Snippets are read from disk at build time, never copied:
+#   {% snippet lab:models/baseball-stars/pitch.js match:TEXT %}
+# Paths are relative to the root named before the colon.
 code_roots:
-  baseball-stars: ../baseball-stars
   lab: .
-# Optional: link snippet captions to hosted repos, e.g.
-# code_urls:
-#   baseball-stars: https://github.com/afomi/baseball-stars/blob/main
-code_urls: {}
+# Snippet captions link to the hosted source.
+code_urls:
+  lab: https://github.com/afomi/game-study/blob/main
 
 markdown: kramdown
 kramdown:
@@ -44,6 +43,7 @@ exclude:
   - "*.zip"
   - test
   - bench
+  - models      # quoted by snippets; source lives in the repo, not on the site
   - workbench   # ROM-derived; local only, see _config.workbench.yml
   - Gemfile
   - Gemfile.lock

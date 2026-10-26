@@ -137,7 +137,6 @@ module Lab
     STATUS = %w[expected observed].freeze
 
     def generate(site)
-      roots = site.config["code_roots"] || {}
       boards = site.data["storyboard"] || {}
       boards.each do |game, board|
         where = "_data/storyboard/#{game}.yml"
@@ -155,11 +154,6 @@ module Lab
               raise Error, "#{at}: shot #{sc["shot"]} not found in workbench (rerun its experiment)" unless File.file?(png)
             end
             %w[title what].each { |k| raise Error, "#{at}: missing #{k}" if sc[k].to_s.strip.empty? }
-            next unless sc["remake"]
-            repo, rel = sc["remake"].split(":", 2)
-            raise Error, "#{at}: remake repo '#{repo}' not in code_roots" unless roots[repo] && rel
-            file = File.join(File.expand_path(roots[repo], site.source), rel)
-            raise Error, "#{at}: remake #{sc["remake"]} not found" unless File.file?(file)
           end
         end
         dupes = ids.tally.select { |_, n| n > 1 }.keys

@@ -5,7 +5,8 @@ episode: 1
 status: draft
 subsystem: pitching
 scene: pitching
-summary: Every pitch in Baseball Stars comes with a radar reading. We go looking for that number, find out where it comes from, and rebuild it as a small class with a test that replays 24 real pitches.
+image: strike-out-93
+summary: Every pitch in Baseball Stars comes with a radar reading. We go looking for that number, find out where it comes from, and model it as a small class with a test that replays 24 real pitches.
 ---
 
 {% include screenshot.html game="baseball-stars" name="pitch-view" caption="The pitch, as the game first shows it: from behind the plate, the pitcher up top, a mini diamond, and both lineup cards." %}
@@ -24,7 +25,7 @@ BALL, 81.
 
 So the game is measuring its own pitches.
 That's a gift.
-If we want our remake to throw like the original, this number is the place to start.
+If we want to understand how this game pitches, this number is the place to start.
 
 This sketch asks two questions.
 Where does the game keep that number?
@@ -126,7 +127,7 @@ So the real question is: who sets the ball's velocity?
 
 ## Think of the pitcher as an object
 
-Here's a way of thinking that will help, and it's the same one our remake uses.
+Here's a way of thinking that will help, and it's the same one our model of the pitch uses.
 
 In a lot of modern code, you describe things as *objects*.
 An object bundles up two kinds of stuff:
@@ -235,26 +236,26 @@ And the routine reads the R CURVE half.
 
 Is that a bug from 1989, or a design decision we can't see the reason for yet?
 We don't know.
-Our remake does what the original does, and keeps the question open.
+Our model does what the original does, and keeps the question open.
 
-## Rebuild it
+## Model it
 
-Now the part this whole series is for.
-Here's the pitcher in our remake, as a JavaScript class — the code version of "an object with properties and methods."
+Now the proof.
+Here's the pitcher as a small JavaScript class — the code version of "an object with properties and methods."
 
 The constructor takes the six ratings off the card and keeps them as properties:
 
-{% snippet baseball-stars:src/model/pitcher.js match:constructor({ after:8 %}
+{% snippet lab:models/baseball-stars/pitcher.js match:constructor({ after:8 %}
 
 The base speed is a *getter*: a property that's worked out when you ask for it, instead of stored.
-The game's table of sixteen speeds turned out to be a straight line, so the remake can compute it:
+The game's table of sixteen speeds turned out to be a straight line, so the model can compute it:
 
-{% snippet baseball-stars:src/model/pitcher.js match:baseSpeed() before:1 after:2 %}
+{% snippet lab:models/baseball-stars/pitcher.js match:baseSpeed() before:1 after:2 %}
 
 And throwing is a method.
 Give it the button held and a random number, and it gives back the release speed in sixteenths, the same way the original does — down to the rounding:
 
-{% snippet baseball-stars:src/model/pitcher.js match:releaseSpeed({ before:5 after:20 %}
+{% snippet lab:models/baseball-stars/pitcher.js match:releaseSpeed({ before:5 after:20 %}
 
 How do we know it's right?
 We wrote a *test*: a little program that checks our code against things we know are true.
@@ -290,11 +291,6 @@ Where it comes from — runs: `pitch-speed-source` (a trap on writes to `$051A`)
 - A simulation of the release routine reproduced all 44 logged releases (24 distinct) exactly.
 
 </details>
-
-## What the remake learns
-
-The remake now has a real `Pitcher`, and its numbers are the original's numbers.
-It doesn't throw with it yet — the ball's flight in the remake still runs on guesses — so that's the next step for the pitching phase: drop the made-up `PITCH_LIST` menu, read Up and Down during the wind-up, and fly the ball at the speed this class returns.
 
 ## Still to find
 

@@ -5,6 +5,7 @@ episode: 3
 status: draft
 scene: make-team
 subsystem: teams, players, the draft, secrets
+image: fired
 summary: Presidents, monsters, ninjas, the Lovely Ladies, a team of SNK's own — and a ninth team that's yours to build, hire, fire, and, if you know the riddles, rebuild entirely.
 ---
 

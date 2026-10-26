@@ -6,7 +6,7 @@
 #   size: 1                # bytes
 #   desc: What it holds, in one sentence.
 #   confidence: guess      # guess | observed | confirmed
-#   remake: src/path.js NAME  # (optional) the remake's counterpart
+#   model: models/<game>/file.js NAME  # (optional) where the working model reproduces it
 #   episode: 01-the-pitch  # (optional) where it was found
 #
 # First entries: 2026-10-22, from disassembling RESET/NMI (bench/disasm.mjs)
@@ -52,7 +52,6 @@
   size: 1
   desc: Index into the 42-entry jump table at $CCE1 (21 enter/run pairs); even values set a screen up, the following odd value runs it.
   confidence: confirmed
-  remake: src/game.js Game#setPhase
   episode: 02-the-frame-loop
 
 - addr: "$0486"
@@ -149,7 +148,7 @@
   size: 2
   desc: The pitch's speed in sixteenths of a mile per hour (low byte first), copied once from ball_velocity as the ball heads for the plate. The call box shows it rounded to whole M/H — 1417 shows as 89.
   confidence: confirmed
-  remake: src/model/pitcher.js radarMph
+  model: models/baseball-stars/pitcher.js radarMph
   episode: 01-the-pitch
 
 - addr: "$00B2"
@@ -157,7 +156,7 @@
   size: 2
   desc: How fast the pitch is moving toward the plate, in sixteenths of M/H; added to the ball's position every frame. Set at release by $9600 (bank 6) from base speed, the button held, and a random byte — 24 of 24 bench pitches reproduced exactly.
   confidence: confirmed
-  remake: src/model/pitcher.js Pitcher#releaseSpeed
+  model: models/baseball-stars/pitcher.js Pitcher#releaseSpeed
   episode: 01-the-pitch
 
 - addr: "$00B0"
@@ -172,7 +171,7 @@
   size: 4
   desc: Each side's pitcher's base speed (low bytes at $0506-$0507, high at $0508-$0509), looked up from the pitcher's SPEED rating in a 16-entry table at $ACEA (bank 4) — 528 at 0, 672 at 15.
   confidence: confirmed
-  remake: src/model/pitcher.js Pitcher#baseSpeed
+  model: models/baseball-stars/pitcher.js Pitcher#baseSpeed
   episode: 01-the-pitch
 
 - addr: "$0094"
@@ -180,7 +179,7 @@
   size: 1
   desc: The pitcher's controller slot — the buttons held right now (Up $08, Down $04, Left $02, Right $01). A human's pad is copied in every frame ($C51C); the computer writes cpu_pitch_plan instead. All the pitching code reads this slot and never the controller, so it can't tell who is pitching.
   confidence: confirmed
-  remake: src/model/pitch.js Pitch#step
+  model: models/baseball-stars/pitch.js Pitch#step
   episode: 01-the-pitch
 
 - addr: "$0093"
@@ -195,7 +194,7 @@
   size: 2
   desc: The pitch's sideways position, 16-bit and wrapping; set at release from where the pitcher stands on the mound (Left or Right before the throw moves it).
   confidence: confirmed
-  remake: src/model/pitch.js Pitch#move
+  model: models/baseball-stars/pitch.js Pitch#move
   episode: 01-the-pitch
 
 - addr: "$00BD"
@@ -203,7 +202,7 @@
   size: 2
   desc: How far the pitch has come toward the plate, 16-bit and wrapping; ball_velocity is added every frame. The game uses its high byte as a clock for the flight — steering works from $50 to $DF, the drop starts at $A8.
   confidence: confirmed
-  remake: src/model/pitch.js Pitch#move
+  model: models/baseball-stars/pitch.js Pitch#move
   episode: 01-the-pitch
 
 - addr: "$00C0"
@@ -211,7 +210,7 @@
   size: 2
   desc: The pitch's height — $1200 for every pitch, the whole way, unless it's a drop ball.
   confidence: confirmed
-  remake: src/model/pitch.js PITCH_HEIGHT
+  model: models/baseball-stars/pitch.js PITCH_HEIGHT
   episode: 01-the-pitch
 
 - addr: "$00B4"
@@ -219,7 +218,7 @@
   size: 2
   desc: Zero for a normal pitch. A drop ball gets -682 ($FD56) near the plate ($98D5); while it's falling, the ball loses that much height a frame and its forward speed is multiplied by 220/256 ($9837).
   confidence: confirmed
-  remake: src/model/pitch.js Pitch#fall
+  model: models/baseball-stars/pitch.js Pitch#fall
   episode: 01-the-pitch
 
 - addr: "$0518"
@@ -227,7 +226,7 @@
   size: 1
   desc: Set to 8 when Up is held at release and the R CURVE roll succeeds; cleared when the drop starts. Holding Down in flight doesn't touch it — no code reads Down after release.
   confidence: confirmed
-  remake: src/model/pitch.js Pitch#startDrop
+  model: models/baseball-stars/pitch.js Pitch#startDrop
   episode: 01-the-pitch
 
 - addr: "$0517"

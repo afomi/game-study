@@ -86,25 +86,18 @@ try {
     }
     check('Tailwind source is not published', !existsSync(join(site, 'assets/css/tailwind.css')))
     check('lightbox script is published', existsSync(join(site, 'assets/js/lightbox.js')))
-    check('CNAME publishes games.civic.studio', existsSync(join(site, 'CNAME')) && readFileSync(join(site, 'CNAME'), 'utf8').trim() === 'games.civic.studio')
-
-    const bundle = join(site, 'assets/game/baseball-stars.js')
-    check('game bundle is published', existsSync(bundle), 'run `npm run games` first')
-    if (existsSync(bundle)) {
-      check('game bundle exports mount()', /\bas mount\b|export function mount/.test(readFileSync(bundle, 'utf8')))
-    }
+    check('model source is quoted, not published', !existsSync(join(site, 'models')))
   }
 
   // ---- 2. Broken references must fail the build ----
   console.log('fail-loud')
   const faults = [
-    ['snippet of a missing file', 'episode', '{% snippet baseball-stars:src/nope.js lines:1 %}', /not found/],
-    ['snippet match with no hit', 'episode', '{% snippet baseball-stars:src/phases/fielding.js match:NO_SUCH_TEXT %}', /not found/],
-    ['snippet lines out of range', 'episode', '{% snippet baseball-stars:src/phases/fielding.js lines:9000-9001 %}', /out of range/],
+    ['snippet of a missing file', 'episode', '{% snippet lab:models/nope.js lines:1 %}', /not found/],
+    ['snippet match with no hit', 'episode', '{% snippet lab:models/baseball-stars/pitch.js match:NO_SUCH_TEXT %}', /not found/],
+    ['snippet lines out of range', 'episode', '{% snippet lab:models/baseball-stars/pitch.js lines:9000-9001 %}', /out of range/],
     ['snippet from an unknown repo', 'episode', '{% snippet nope:src/game.js lines:1 %}', /unknown repo/],
     ['ram ref to an unmapped name', 'episode', '{% ram baseball-stars no_such_var %}', /not in _data\/ram/],
     ['episode in an unknown scene', 'episode-scene', 'scene: no-such-scene', /not in _data\/storyboard/],
-    ['storyboard remake file missing', 'storyboard', 'remake: baseball-stars:src/phases/title.js|remake: baseball-stars:src/nope.js', /not found/],
     ['published screenshot with no record', 'screen-orphan', '', /has no record/],
     ['screenshot include with no record', 'episode', '{% include screenshot.html game="baseball-stars" name="nope" caption="x" %}', /screenshot record not found/],
     ['a ROM left in the site source', 'rom-leak', '', /no ROMs or archives/],

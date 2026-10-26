@@ -143,3 +143,11 @@ drop-ball-lands:
   experiment: bench/experiments/baseball-stars/pitch-rig-drop.lua
   rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
   promoted: 2026-10-26
+
+title:
+  run: attract
+  shot: t008
+  frame: 480
+  experiment: bench/experiments/baseball-stars/attract.lua
+  rom_sha1: ff1e9f9e214a678704c4725a77dcc03c71cbe4f0
+  promoted: 2026-10-26

@@ -5,6 +5,7 @@ episode: 4
 status: draft
 subsystem: pitching controls
 scene: pitching
+image: drop-ball-lands
 summary: A pitch in Baseball Stars isn't a button press — it's two seconds of wind-up and half a second of flight, and the pitcher's d-pad matters for nearly every frame of it. We map each moment, find who's really holding the controller, and rebuild the flight frame by frame.
 ---
 
@@ -152,22 +153,22 @@ So can a computer player.
 So can a test, or a recording, or someone on the other side of a network.
 Programmers call that an *interface*: agree on the question, and anything that can answer it can plug in.
 
-## Rebuild it
+## Model it
 
-Our remake's `Pitch` is an object that remembers where the ball is and how fast it's going.
+Our model of the pitch, `Pitch`, is an object that remembers where the ball is and how fast it's going.
 Its `step` method is the original's routine, almost line for line — every step but the strike-zone check, which we haven't followed yet:
 
-{% snippet baseball-stars:src/model/pitch.js match:step(held before:1 after:6 %}
+{% snippet lab:models/baseball-stars/pitch.js match:step(held before:1 after:6 %}
 
 And notice what `step` asks for: just `held`, a plain description of what's held right now.
 It doesn't know about keyboards or controllers or computer players.
-That's the interface, and it's what will let the remake's computer pitcher drive exactly the same code later.
+That's the interface: a person, a computer pitcher, or a recording from the bench can all drive exactly the same code.
 
 Steering is one small method, with the original's two rules right there in it:
 
-{% snippet baseball-stars:src/model/pitch.js match:steer({ after:15 %}
+{% snippet lab:models/baseball-stars/pitch.js match:steer({ after:15 %}
 
-To check it, we exported every frame of twelve pitches from the bench — plain, placed left and right, aimed three ways, steered both ways, slow, dropped, and dropped-with-Down — and wrote a test that flies each one through the remake's `Pitch`.
+To check it, we exported every frame of twelve pitches from the bench — plain, placed left and right, aimed three ways, steered both ways, slow, dropped, and dropped-with-Down — and wrote a test that flies each one through `Pitch`.
 All twelve match the original exactly: position, speed, and height, every frame, until the ball stops.
 And the test can fail: brake the drop at 230/256 instead of 220, or swap the two curve ratings, and it catches it.
 
@@ -189,15 +190,12 @@ The drop (`$98D5`) starts at depth `$A8xx`; the fall (`$9837`) multiplies forwar
 
 </details>
 
-## What the remake learns
+## What it adds up to
 
-The remake's pitching phase has been a menu: pick FAST, CURVE, SLIDE, or CHANGE, then press A.
-The original has no menu at all, and the difference matters more than any number.
-So the plan for the remake's pitching phase is now:
-
-- Before the throw, Left and Right move the pitcher; A starts a two-second wind-up.
-- At release, read Up/Down for speed and Left/Right for the lane.
-- Every frame of flight, hand `Pitch#step` whatever is held — from the keyboard today, and from a computer pitcher later, through the same door.
+A pitch can be something you *choose* from a menu.
+In Baseball Stars, it's something you *steer*.
+There's no menu at all: the speed is a button you hold as you let go, the curve is something you do with your thumb while the ball flies, and every bend costs you speed.
+That one decision — keep listening to the controller the whole way — is a big part of why the duel still feels alive.
 
 ## Still to find
 

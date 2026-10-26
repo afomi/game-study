@@ -3,12 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "games": "npm run game:baseball-stars",
-    "game:baseball-stars": "npm --prefix ../baseball-stars run build && mkdir -p assets/game && cp ../baseball-stars/dist/baseball-stars.js assets/game/baseball-stars.js",
+    "test": "node --test models/*/test/*.test.js",
     "build": "jekyll build",
     "check": "node test/check.mjs",
+    "all": "npm test && npm run build && npm run check",
     "storyboard": "node ../tldr-helper/draw/specs/game-study.gen.mjs > ../tldr-helper/draw/specs/game-study.json && cd ../tldr-helper/draw && node build.mjs specs/game-study.json ../../tldrawings/game-study.tldr",
-    "all": "npm run games && npm run build && npm run check",
     "bench": "node bench/run.mjs",
     "chr": "node bench/extract-chr.mjs",
     "workbench": "jekyll serve --config _config.yml,_config.workbench.yml"

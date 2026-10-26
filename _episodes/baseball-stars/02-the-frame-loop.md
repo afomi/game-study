@@ -5,6 +5,7 @@ episode: 2
 status: draft
 scene: power-on
 subsystem: boot, NMI, scene dispatch
+image: title
 summary: What a cartridge does in its first two frames, how one interrupt keeps the whole game on time, and how a single byte decides which screen you're looking at.
 ---
 
@@ -151,9 +152,7 @@ The scoreboard pair (10 → 11) works twice: "PLAY BALL" before the game, the li
 Notice the pairs.
 An even scene sets a screen up — loading its tiles while the screen is dark — and lasts a few frames.
 The odd scene after it runs that screen until something changes.
-The remake already has the same shape: every phase has an `enter` and an `update`.
-
-{% snippet baseball-stars:src/game.js match:setPhase(phase) context:9 %}
+If you've written a game with an `enter` and an `update` for each screen, this is the same shape, thirty-five years earlier.
 
 ## Sharing one window
 

@@ -1,9 +1,9 @@
 # Game Study — Plan
 
-*Rebuilding classic games, frame by frame.* A Civic Studio series at games.civic.studio (repo `afomi/game-study`).
-Each study takes one classic game apart one system at a time and rebuilds it as a playable web remake; installments are sketches.
+*Rebuilding classic games, frame by frame.* A Civic Studio series at https://afomi.github.io/game-study/ (repo `afomi/game-study`).
+Each study takes one classic game apart — teardowns of the original, not remakes (user, 2026-10-26). Shape: (a) why this game, (b) brief history — the climate, the maker, (c) how it plays — winning, losing, building, (d) key mechanics, (e) teardowns of key mechanics with screenshots; a–d on the game page, e = the sketches.
 Goals: fun to make, teach how games are made, honor the people who made them, keep the games alive.
-First game: SNK's Baseball Stars (remake in `../baseball-stars`).
+First game: SNK's Baseball Stars. A separate remake lives in `../baseball-stars` and may take the models; nothing here depends on it.
 
 Tasks are tracked inline here.
 
@@ -18,17 +18,19 @@ Tasks are tracked inline here.
 
 ## Now
 
-**Sketches 01–04, then publish.**
-Sketch 01 (pitch speed: where it's kept, where it comes from) and Sketch 04 (the whole pitch: placement, release, steering every frame, the drop, and the controller slot the CPU shares) are drafted in the new voice and backed by remake tests (`npm test` in ../baseball-stars: 43 passing, 12 flights frame by frame).
+**Baseball Stars as a teardown, then publish.**
+The game page now carries (a)–(d), drafted from sourced research; "Why this game" is a marked draft for Ryan's own words.
+The teardowns are Sketches 01–04, each with a card image; Sketch 00 is the method.
+The measured models live in `models/baseball-stars/` (`npm test`: 43 passing — 24 release speeds, 12 flights frame by frame).
 Voice for sketches (user, 2026-10-25): conversational, beginner-friendly, objects/properties/methods as the lens; user interactions and the code approaches behind them are a priority (2026-10-26).
-Next: retone 00/02/03; then the remake's pitching phase (no menu; mound, wind-up, release, per-frame steering through one controls slot).
+Next: Ryan rewrites "Why this game"; retone 02/03; an interactive model demo for Sketch 04 (steer a pitch in the page); then the swing.
 
 ## Tasks
 
-- [x] L1. Lab scaffold — games/episodes collections, RAM map with build-time validation, live code snippets from remake repos, embedded playable remake.
+- [x] L1. Lab scaffold — games/episodes collections, RAM map with build-time validation, live code snippets (from `models/` since 2026-10-26; the remake embed was removed).
   Test: `npm run check`.
 - [x] L1b. Storyboard — scenes in play order drive the book's contents, each sketch's chapter placement, and the `.tldr`; validated at build.
-  Test: `npm run check` (episode in unknown scene, missing remake file).
+  Test: `npm run check` (episode in unknown scene).
 - [x] L2. Mesen bench — Docker image (2.2.1, checksum-pinned), Lua prelude (`lab.run{}`), harness `bench/run.mjs` with explicit checks, ROM SHA-1 recorded; CHR extractor; local-only workbench page.
   Test: harness checks on every run; `npm run check` asserts no workbench leak.
   Gap: no deliberately broken experiment in the test suite yet.
@@ -37,19 +39,19 @@ Next: retone 00/02/03; then the remake's pitching phase (no menu; mound, wind-up
 - [~] L11. Sketch 03 — Eight teams, and yours (draft): rosters and their themes, player cards (POINT = sum of six ratings), team creation, the draft (TOO MANY PLAYERS → fire → hire by style; rookie ceilings re-roll).
   Done since: default name per strength; "?" is a fixed archetype (identical save data); female hire (hidden 4th row) and both riddle teams verified with exact answers; player records (16 bytes, ASCII names) in save RAM; growth rules sourced to the manual.
   Open: how saved records hold ratings (pitchers are nibble-packed in the working copy, card order — found in L4); the power-up cost curve; prestige → crowd → dollars; the Crushers' real names (no source found; ROM has no staff strings).
-- [~] L4. Sketch 01 — The pitch (draft): speed kept at `$051A` in sixteenths; set at release (`$9600`, bank 6) from the SPEED table (`$ACEA`, bank 4), the held button (Down = fastball, Up = slow, reversing the manual), and a random 0–15; the slow pitch uses the sine table and an R CURVE roll. Remake: `src/model/pitcher.js` + `test/pitcher.test.js` (24 bench pitches; Pages runs `npm test`).
-  Test: `npm test` in the remake (fault-injected: DROP instead of R CURVE fails 3).
+- [~] L4. Sketch 01 — The pitch (draft): speed kept at `$051A` in sixteenths; set at release (`$9600`, bank 6) from the SPEED table (`$ACEA`, bank 4), the held button (Down = fastball, Up = slow, reversing the manual), and a random 0–15; the slow pitch uses the sine table and an R CURVE roll. Model: `models/baseball-stars/pitcher.js` + `test/pitcher.test.js` (24 bench pitches; Pages runs `npm test`).
+  Test: `npm test` (models/baseball-stars; fault-injected: DROP instead of R CURVE fails 3).
   Open: stamina (`$0510`) and the fatigue cosine.
-- [~] L13. Sketch 04 — The whole pitch (draft): mound placement, release lanes, per-frame steering (`$991B`: curve table, speed traded for bend), the drop (`$98D5`/`$9837`: fall −682/frame, brake 220/256; Down in flight is never read), the per-frame routine order (`$97B2`), and the controller slots (`$93`–`$96`) filled by pad copy or CPU (`$0521` = CPU plan, formerly the `pitch_speed_index` guess). Rig: `bench/lib/pitch-rig.lua` + 12 `pitch-rig-*` runs. Remake: `src/model/pitch.js` + `test/pitch.test.js` (12 flights, fault-injected).
+- [~] L13. Sketch 04 — The whole pitch (draft): mound placement, release lanes, per-frame steering (`$991B`: curve table, speed traded for bend), the drop (`$98D5`/`$9837`: fall −682/frame, brake 220/256; Down in flight is never read), the per-frame routine order (`$97B2`), and the controller slots (`$93`–`$96`) filled by pad copy or CPU (`$0521` = CPU plan, formerly the `pitch_speed_index` guess). Rig: `bench/lib/pitch-rig.lua` + 12 `pitch-rig-*` runs. Model: `models/baseball-stars/pitch.js` + `test/pitch.test.js` (12 flights, fault-injected).
   Open: release angle math (`$C18F`, style table `$97A4`); mound limits; strike-zone flag (`$98F0`) and calls; pad read before/after step (needs a run that changes buttons mid-flight); the batter's side.
 - [ ] L5. Credits — sourced credits for Baseball Stars on the game page.
 - [ ] L6. Label export — generate a Mesen `.mlb` from `_data/ram/<game>.yml`.
-- [~] L7. Go live — `afomi/game-study` created and pushed (2026-10-26). You: create `afomi/baseball-stars` (the workflow checks it out) and push it, enable Pages (source: GitHub Actions) with custom domain `games.civic.studio`, add DNS `CNAME games → afomi.github.io`.
-  Ready: `CNAME`, `.github/workflows/pages.yml` (pinned SHAs), Linux platform in `Gemfile.lock`, fair-use captions, trademark footer.
-  Test: the workflow's check + verify steps; then load https://games.civic.studio.
+- [x] L7. Go live — `afomi/game-study`, Pages via GitHub Actions at https://afomi.github.io/game-study/ (2026-10-26). Self-contained build: model tests → check → build with the Pages base path → verify → deploy. No custom domain for now (user: github.io is fine); `CNAME` removed.
+  Later, if wanted: set `games.civic.studio` in Pages settings and add DNS `CNAME games → afomi.github.io`; the base path empties on its own.
+  Test: the workflow's test, check, and verify steps; then load the site.
 - [x] L8. Fair-use screenshot pipeline — `bench/promote.mjs` publishes single frames with provenance; captions credit game/publisher/year/frame; build fails on unrecorded screens.
   Test: `npm run check` (2 fault injections).
-- [ ] L9. Study No. 2 — SimCity 2000: storyboard, a DOS bench (DOSBox-X or DOSBox Staging, security-reviewed like Mesen), remake repo.
+- [ ] L9. Study No. 2 — SimCity 2000: storyboard, a DOS bench (DOSBox-X or DOSBox Staging, security-reviewed like Mesen).
 - [x] L12. Gaps pass (2026-10-25): sourced research (`bench/research/baseball-stars.md`), closed-loop typist, pitch speed decoded, the bank-borrow routine found, credits honestly stated on the game page.
 - [~] L10. Baseball Stars runtime — boot, NMI/main-loop handshake, controller reader, bank switching, sound in bank 0, 27 of 42 scenes named (Sketch 02, draft). Tools: `bench/disasm.mjs`, RAM dumps in `lab.run{dumps}`.
   Open: the other 15 scenes (27 of 42 named); confirm `menu_page` ($00B1, now seen stepping 2 → 4 on team select); how the NMI swaps to bank 0 for sound; the pitch-speed bytes (leads in Sketch 01).

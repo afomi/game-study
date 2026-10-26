@@ -1,41 +1,40 @@
 # Game Study
 
-*Rebuilding classic games, frame by frame.* A Civic Studio series, published at **https://games.civic.studio**.
+*Rebuilding classic games, frame by frame.* A Civic Studio series, published at **https://afomi.github.io/game-study/**.
 
 In art, a study is a copy of a master's work made to learn how it was done.
-Each study here takes one classic game (Study No. 1: Baseball Stars) and rebuilds it one system at a time.
-Each installment is a **sketch**: screenshots and narrative, the variables and code behind them, and a playable remake.
+Each study here takes one classic game apart (Study No. 1: Baseball Stars) and explains how it works.
+This repo is about the original games — teardowns, not remakes.
 
-The series covers many games over time, starting with SNK's Baseball Stars (NES); SimCity 2000 is a likely Study No. 2.
-It exists to:
+Each study has the same shape:
 
-1. be fun to make,
-2. teach people how games are made,
-3. honor the people who made them,
-4. keep the games alive as remakes.
+1. **Why this game** — an introduction, and why it was picked.
+2. **Its time** — a brief history: the climate it came out in, and who made it.
+3. **How it plays** — the gist: what winning, losing, and building look like.
+4. **Key mechanics** — the systems that make it what it is.
+5. **The teardowns** — one sketch per mechanic: screenshots, the variables in memory, the code behind it, and a small working model that reproduces what the original does, checked against bench recordings.
 
-## Repos
-
-This repo is the book.
-Each game's remake lives in its own repo, checked out beside this one and listed under `code_roots` in `_config.yml`:
-
-| Game | Remake repo |
-|---|---|
-| Baseball Stars | `../baseball-stars` |
+1–4 live on the study's page (`_games/<game>.md`); 5 is the sketches (`_episodes/<game>/`).
+The series covers many games over time; SimCity 2000 is a likely Study No. 2.
+It exists to be fun to make, to teach people how games are made, and to honor the people who made them.
 
 ## Commands
 
 ```sh
 npm install         # once: Tailwind v4 CLI + typography plugin
-npm run games       # build each remake and copy its bundle to assets/game/
+npm test            # the models' tests: replay bench recordings through models/<game>/
 npm run build       # jekyll build → _site
 npm run check       # integrity test (see below)
 npm run all         # all of the above
-jekyll serve        # preview at http://localhost:4000
+npm run workbench   # preview with the local-only workbench, at http://localhost:4000
 ```
 
-`jekyll serve` doesn't watch the remake repos.
-After changing a remake, run `npm run games` and touch a post to regenerate.
+## Models
+
+`models/<game>/` holds small working models of the original's systems, in the original's own units (e.g. `models/baseball-stars/pitch.js`).
+Each has a test in `models/<game>/test/` that replays recordings from the bench, and must match them exactly.
+Sketches quote the models with `{% snippet lab:models/... %}`; the source isn't published on the site, and snippet captions link to it on GitHub.
+A remake can take the models as a starting point; nothing here depends on one.
 
 ## Styling
 
@@ -58,11 +57,11 @@ Screenshots chosen for publication will be promoted deliberately, one at a time,
 
 | Thing | Lives in | URL |
 |---|---|---|
-| Study | `_games/<game>.md` (`study` number, title, publisher, platform, year, `rom_sha1`, `remake_repo`, sourced `credits`) | `/<game>/` |
-| Sketch | `_episodes/<game>/NN-slug.md` (`game`, `episode`, `status`, `scene`, `summary`) | `/<game>/NN-slug/` |
+| Study | `_games/<game>.md` (`study` number, title, publisher, platform, year, `rom_sha1`); its text is sections 1–4 | `/<game>/` |
+| Sketch | `_episodes/<game>/NN-slug.md` (`game`, `episode`, `status`, `scene`, `summary`, `image` = a promoted screenshot for its card; sketches without one are listed under "How these are made") | `/<game>/NN-slug/` |
 | RAM map | `_data/ram/<game>.yml` (schema in the file header) | table on the game page, `#ram-<name>` anchors |
 | Published screenshots | `assets/screens/<game>/<name>.png` + provenance in `_data/screens/<game>.yml`, both written by `bench/promote.mjs` | via `screenshot.html` |
-| Playable clone | `assets/game/<game>.js` exporting `mount(canvas, opts)` | via `play.html` |
+| Models | `models/<game>/*.js` + `models/<game>/test/` | quoted by snippets; not published |
 | Bench | `bench/` — `MESEN.md` (how to drive the emulator), `MESENCE-SECURITY.md`, `docker/`, `experiments/<game>/`, `run.mjs`, `extract-chr.mjs` | not published |
 | Storyboard | `_data/storyboard/<game>.yml` — scenes in play order; observed scenes name their bench `shot` | game page contents; `.tldr` |
 
@@ -72,12 +71,11 @@ RAM `confidence` is one of `guess`, `observed`, `confirmed`.
 ## Authoring tags
 
 ```liquid
-{% snippet baseball-stars:src/phases/fielding.js match:FIELDER_SPEED context:1 %}
-{% snippet baseball-stars:src/phases/fielding.js lines:19-20 %}
-{% snippet baseball-stars:src/model/pitcher.js match:releaseSpeed({ before:5 after:20 %}   (before/after: lines around the first match; context: both)
+{% snippet lab:models/baseball-stars/pitch.js match:steer({ after:15 %}
+{% snippet lab:models/baseball-stars/pitch.js lines:19-20 %}
+{% snippet lab:models/baseball-stars/pitcher.js match:releaseSpeed({ before:5 after:20 %}   (before/after: lines around the first match; context: both)
 {% ram baseball-stars pitch_speed %}
 {% include screenshot.html game="baseball-stars" name="pitch-view" caption="The view from behind the plate." %}
-{% include play.html game="baseball-stars" %}
 ```
 
 `{% ram %}` renders the variable's name first and its address in a small chip, colored by confidence, with the description as a tooltip and a link to the RAM map.
@@ -91,7 +89,7 @@ Raw measurements go in a fold-away box that readers can skip:
 </details>
 ```
 
-Snippets are read from the remake repos at build time (`<repo>:<path>`, resolved through `code_roots`), never pasted in.
+Snippets are read from disk at build time (`<root>:<path>`, resolved through `code_roots`; `lab` is this repo), never pasted in.
 Prefer `match:` over `lines:` so a snippet follows the code when lines move.
 
 ## Fail-loud contract
@@ -103,7 +101,7 @@ A broken reference fails the build — it never renders as a dead link or an emp
 - a RAM map entry with a malformed `addr`, an unknown `confidence`, a missing `desc`, or a duplicate name
 
 `npm run check` proves this by injecting each fault into a temp copy.
-It also builds the real site and asserts that every local `href`/`src`/`import` resolves, no Liquid errors leaked into pages, and the game bundle exports `mount`.
+It also builds the real site and asserts that every local `href`/`src`/`import` resolves, no Liquid errors leaked into pages, and no model source or workbench file is published.
 
 ## Screenshots and fair use
 
@@ -112,18 +110,17 @@ The setup supports that claim:
 
 - **Purpose:** a screenshot appears in a sketch that discusses it, never as a gallery.
 - **Amount:** single frames, chosen one at a time with `node bench/promote.mjs <game> <run>/<shot> <name>`. Whole runs and decoded tiles stay in the local workbench.
-- **Market:** no ROMs, nothing that plays the original.
+- **Market:** no ROMs, nothing that plays the original or substitutes for it.
 - **Credit:** every published screenshot is captioned automatically with the game, publisher, year, and frame, from its provenance record.
 
 The build fails if a published PNG has no provenance record, or a sketch includes a screenshot that was never promoted.
 
 ## Hosting
 
-GitHub Pages from `afomi/game-study`, built by `.github/workflows/pages.yml`, served at `games.civic.studio` (`CNAME`).
-The workflow checks out each remake repo beside this one (e.g. `afomi/baseball-stars`), builds the bundles, runs `npm run check`, then builds and deploys.
+GitHub Pages from `afomi/game-study` (source: GitHub Actions), built by `.github/workflows/pages.yml`, served at https://afomi.github.io/game-study/.
+The workflow runs the models' tests and `npm run check`, then builds with the Pages base path and deploys.
 Actions are pinned to commit SHAs.
-A remake repo can trigger a rebuild with a `remake-updated` repository dispatch.
-DNS: a `CNAME` record `games.civic.studio → afomi.github.io`.
+A custom domain (e.g. `games.civic.studio`) can come later: set it in the repo's Pages settings and add DNS; the base path then becomes empty on its own.
 
 ## Rules
 

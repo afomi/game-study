@@ -9,7 +9,7 @@
         <th class="px-2 py-1">Size</th>
         <th class="px-2 py-1">What it holds</th>
         <th class="px-2 py-1">Confidence</th>
-        <th class="px-2 py-1">Remake</th>
+        <th class="px-2 py-1">Model</th>
       </tr>
     </thead>
     <tbody>
@@ -23,7 +23,12 @@
         <td class="px-2 py-1">{{ v.size | default: 1 }}</td>
         <td class="px-2 py-1">{{ v.desc }}</td>
         <td class="px-2 py-1"><span class="badge badge--{{ v.confidence }}">{{ v.confidence }}</span></td>
-        <td class="px-2 py-1 font-mono">{{ v.remake }}</td>
+        <td class="px-2 py-1 font-mono">
+          {% if v.model %}
+          {% assign m = v.model | split: " " %}
+          <a href="{{ site.code_urls.lab }}/{{ m[0] }}">{{ m[1] | default: m[0] }}</a>
+          {% endif %}
+        </td>
       </tr>
       {% endfor %}
     </tbody>
