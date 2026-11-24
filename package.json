@@ -13,7 +13,7 @@
     "workbench": "jekyll serve --config _config.yml,_config.workbench.yml"
   },
   "devDependencies": {
-    "@tailwindcss/cli": "^4.3.3",
+    "@tailwindcss/cli": "^4.3.5",
     "@tailwindcss/typography": "^0.5.20"
   }
 }
